@@ -1,11 +1,9 @@
-import GraduateStudentsTable from './components/GraduateStudentsTable'
+import GraduateStudentsTable from "./components/GraduateStudentsTable";
 
 export default async function SettingsGraduate() {
-
-    return (
-            <div>
-                <GraduateStudentsTable/>
-            </div>
-
-    )
-  }
+  return (
+    <div>
+      <GraduateStudentsTable />
+    </div>
+  );
+}

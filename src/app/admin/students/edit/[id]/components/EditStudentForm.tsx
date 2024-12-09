@@ -1,12 +1,16 @@
-"use client"
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useGetStudentByIdQuery, useUpdateStudentMutation } from '@/lib/features/students/studentsApiSlice';
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import {
+  useGetStudentByIdQuery,
+  useUpdateStudentMutation,
+} from "@/lib/features/students/studentsApiSlice";
 import Card from "@/components/card/index";
-import QualificationSelect from '@/components/select/QualificationSelect';
-import AccommodationSelect from './AccomodationSelect';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { useDropzone } from 'react-dropzone';
+import QualificationSelect from "@/components/select/QualificationSelect";
+import AccommodationSelect from "./AccomodationSelect";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
 
 interface Student {
   admissionNumber: string;
@@ -52,7 +56,8 @@ interface Guardian {
 
 export default function StudentForm({ id }: { id: string }) {
   const { data: studentData, isSuccess } = useGetStudentByIdQuery(id);
-  const [updateStudent, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateStudentMutation();
+  const [updateStudent, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] =
+    useUpdateStudentMutation();
 
   const student: Student | undefined = studentData?.entities[id];
 
@@ -60,47 +65,47 @@ export default function StudentForm({ id }: { id: string }) {
 
   // Initialize state for form fields
   const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string>('');
-  const [admissionNumber, setAdmissionNumber] = useState<string>('');
-  const [cityAndGuildNumber, setCityAndGuildNumber] = useState<string>('');
-  const [qualification, setQualification] = useState<string>('');
-  const [accommodation, setAccommodation] = useState<string>('');
-  const [admissionDate, setAdmissionDate] = useState<string>('');
-  const [firstName, setFirstName] = useState<string>('');
-  const [middleName, setMiddleName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [dateOfBirth, setDateOfBirth] = useState<string>('');
-  const [idNumber, setIdNumber] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [mobileNumber, setMobileNumber] = useState<string>('');
-  const [gender, setGender] = useState<string>('');
-  const [homeLanguage, setHomeLanguage] = useState<string>('');
+  const [photoPreview, setPhotoPreview] = useState<string>("");
+  const [admissionNumber, setAdmissionNumber] = useState<string>("");
+  const [cityAndGuildNumber, setCityAndGuildNumber] = useState<string>("");
+  const [qualification, setQualification] = useState<string>("");
+  const [accommodation, setAccommodation] = useState<string>("");
+  const [admissionDate, setAdmissionDate] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [middleName, setMiddleName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  const [idNumber, setIdNumber] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [mobileNumber, setMobileNumber] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [homeLanguage, setHomeLanguage] = useState<string>("");
   const [address, setAddress] = useState<Address>({
-    street1: '',
-    street2: '',
-    city: '',
-    province: '',
-    country: '',
-    postalCode: ''
+    street1: "",
+    street2: "",
+    city: "",
+    province: "",
+    country: "",
+    postalCode: "",
   });
   const [postalAddress, setPostalAddress] = useState<Address>({
-    street1: '',
-    street2: '',
-    city: '',
-    province: '',
-    country: '',
-    postalCode: ''
+    street1: "",
+    street2: "",
+    city: "",
+    province: "",
+    country: "",
+    postalCode: "",
   });
   const [useAsPostalAddress, setUseAsPostalAddress] = useState(false);
   const [showAddress, setShowAddress] = useState(false);
   const [guardians, setGuardians] = useState<Guardian[]>([
     {
-      firstName: '',
-      lastName: '',
-      email: '',
-      relation: '',
-      mobileNumber: ''
-    }
+      firstName: "",
+      lastName: "",
+      email: "",
+      relation: "",
+      mobileNumber: "",
+    },
   ]);
 
   // Handle photo change
@@ -111,28 +116,40 @@ export default function StudentForm({ id }: { id: string }) {
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
     } else {
-      alert('File is too large. Maximum size is 5MB.');
+      alert("File is too large. Maximum size is 5MB.");
     }
   }, []);
-
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': []
-    }
+      "image/*": [],
+    },
   });
 
   // Handle guardian change
-  const handleGuardianChange = (index: number, field: string, value: string) => {
-    const newGuardians = guardians.map((guardian, i) => 
+  const handleGuardianChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    const newGuardians = guardians.map((guardian, i) =>
       i === index ? { ...guardian, [field]: value } : guardian
     );
     setGuardians(newGuardians);
   };
 
   const addGuardian = () => {
-    setGuardians([...guardians, { firstName: '', lastName: '', email: '', relation: '', mobileNumber: '' }]);
+    setGuardians([
+      ...guardians,
+      {
+        firstName: "",
+        lastName: "",
+        email: "",
+        relation: "",
+        mobileNumber: "",
+      },
+    ]);
   };
 
   const removeGuardian = (index: number) => {
@@ -142,40 +159,54 @@ export default function StudentForm({ id }: { id: string }) {
   // Set form fields with fetched data when available
   useEffect(() => {
     if (isSuccess && student) {
-      setAdmissionNumber(student.admissionNumber || '');
-      setCityAndGuildNumber(student.profile?.cityAndGuildNumber || '');
-      setQualification(student.qualification?.length > 0 ? student.qualification[0]._id : '');
-      setAccommodation(student.currentAccommodation || '');
-      setAdmissionDate(student.profile?.admissionDate || '');
-      setFirstName(student.profile?.firstName || '');
-      setMiddleName(student.profile?.middleName || '');
-      setLastName(student.profile?.lastName || '');
-      setDateOfBirth(student.profile?.dateOfBirth || '');
-      setIdNumber(student.profile?.idNumber || '');
-      setEmail(student.email || '');
-      setMobileNumber(student.profile?.mobileNumber || '');
-      setGender(student.profile?.gender || '');
-      setHomeLanguage(student.profile?.homeLanguage || '');
-      setPhotoPreview(student.profile?.avatar || '');
-      setAddress(student.profile?.address || {
-        street1: '',
-        street2: '',
-        city: '',
-        province: '',
-        country: '',
-        postalCode: ''
-      });
-      setPostalAddress(student.profile?.postalAddress || {
-        street1: '',
-        street2: '',
-        city: '',
-        province: '',
-        country: '',
-        postalCode: ''
-      });
-      setGuardians(student.guardians || [
-        { firstName: '', lastName: '', email: '', relation: '', mobileNumber: '' }
-      ]);
+      setAdmissionNumber(student.admissionNumber || "");
+      setCityAndGuildNumber(student.profile?.cityAndGuildNumber || "");
+      setQualification(
+        student.qualification?.length > 0 ? student.qualification[0]._id : ""
+      );
+      setAccommodation(student.currentAccommodation || "");
+      setAdmissionDate(student.profile?.admissionDate || "");
+      setFirstName(student.profile?.firstName || "");
+      setMiddleName(student.profile?.middleName || "");
+      setLastName(student.profile?.lastName || "");
+      setDateOfBirth(student.profile?.dateOfBirth || "");
+      setIdNumber(student.profile?.idNumber || "");
+      setEmail(student.email || "");
+      setMobileNumber(student.profile?.mobileNumber || "");
+      setGender(student.profile?.gender || "");
+      setHomeLanguage(student.profile?.homeLanguage || "");
+      setPhotoPreview(student.profile?.avatar || "");
+      setAddress(
+        student.profile?.address || {
+          street1: "",
+          street2: "",
+          city: "",
+          province: "",
+          country: "",
+          postalCode: "",
+        }
+      );
+      setPostalAddress(
+        student.profile?.postalAddress || {
+          street1: "",
+          street2: "",
+          city: "",
+          province: "",
+          country: "",
+          postalCode: "",
+        }
+      );
+      setGuardians(
+        student.guardians || [
+          {
+            firstName: "",
+            lastName: "",
+            email: "",
+            relation: "",
+            mobileNumber: "",
+          },
+        ]
+      );
     }
   }, [student, isSuccess]);
 
@@ -190,61 +221,73 @@ export default function StudentForm({ id }: { id: string }) {
     e.preventDefault();
     const formData = new FormData();
     if (photo) {
-      formData.append('photo', photo);
+      formData.append("photo", photo);
     }
 
-    formData.append('admissionNumber', admissionNumber);
-    formData.append('firstName', firstName);
-    formData.append('middleName', middleName);
-    formData.append('lastName', lastName);
-    formData.append('gender', gender);
-    formData.append('dateOfBirth', dateOfBirth);
-    formData.append('idNumber', idNumber);
-    formData.append('mobileNumber', mobileNumber);
-    formData.append('email', email);
-    formData.append('homeLanguage', homeLanguage);
-    formData.append('cityAndGuildNumber', cityAndGuildNumber);
-    formData.append('admissionDate', admissionDate);
-    formData.append('accommodation', accommodation);
-    formData.append('qualification', qualification);
+    formData.append("admissionNumber", admissionNumber);
+    formData.append("firstName", firstName);
+    formData.append("middleName", middleName);
+    formData.append("lastName", lastName);
+    formData.append("gender", gender);
+    formData.append("dateOfBirth", dateOfBirth);
+    formData.append("idNumber", idNumber);
+    formData.append("mobileNumber", mobileNumber);
+    formData.append("email", email);
+    formData.append("homeLanguage", homeLanguage);
+    formData.append("cityAndGuildNumber", cityAndGuildNumber);
+    formData.append("admissionDate", admissionDate);
+    formData.append("accommodation", accommodation);
+    formData.append("qualification", qualification);
 
-      // Append address
-  Object.keys(address).forEach(key => {
-    const typedKey = key as keyof Address;
-    formData.append(`address[${key}]`, address[typedKey]);
-  });
-
-  Object.keys(postalAddress).forEach(key => {
-    const typedKey = key as keyof Address;
-    formData.append(`postalAddress[${key}]`, postalAddress[typedKey]);
-  });
-
-   // Append guardian objects
-   guardians.forEach((guardian, index) => {
-    Object.keys(guardian).forEach(key => {
-      const typedKey = key as keyof Guardian;
-      formData.append(`guardians[${index}][${key}]`, guardian[typedKey]);
+    // Append address
+    Object.keys(address).forEach((key) => {
+      const typedKey = key as keyof Address;
+      formData.append(`address[${key}]`, address[typedKey]);
     });
-  });
-  
-    console.log('FormData before sending:', Object.fromEntries(formData.entries()));
+
+    Object.keys(postalAddress).forEach((key) => {
+      const typedKey = key as keyof Address;
+      formData.append(`postalAddress[${key}]`, postalAddress[typedKey]);
+    });
+
+    // Append guardian objects
+    guardians.forEach((guardian, index) => {
+      Object.keys(guardian).forEach((key) => {
+        const typedKey = key as keyof Guardian;
+        formData.append(`guardians[${index}][${key}]`, guardian[typedKey]);
+      });
+    });
+
+    console.log(
+      "FormData before sending:",
+      Object.fromEntries(formData.entries())
+    );
 
     await updateStudent({ id, formData });
   };
 
   return (
     <Card>
-      <form className='m-10' onSubmit={onSaveStudentClicked} encType="multipart/form-data">
+      <form
+        className="m-10"
+        onSubmit={onSaveStudentClicked}
+        encType="multipart/form-data"
+      >
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Study Details</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Study Details
+            </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               All the info regarding study info
             </p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-4">
-                <label htmlFor="admissionNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="admissionNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Student Number *
                 </label>
                 <div className="mt-2">
@@ -255,7 +298,7 @@ export default function StudentForm({ id }: { id: string }) {
                       id="admissionNumber"
                       autoComplete="username"
                       value={admissionNumber}
-                      onChange={e => setAdmissionNumber(e.target.value)}
+                      onChange={(e) => setAdmissionNumber(e.target.value)}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                       placeholder="Admission Number"
                       required
@@ -264,7 +307,10 @@ export default function StudentForm({ id }: { id: string }) {
                 </div>
               </div>
               <div className="sm:col-span-4">
-                <label htmlFor="cityAndGuildNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="cityAndGuildNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   City And Guild Registration Number
                 </label>
                 <div className="mt-2">
@@ -275,7 +321,7 @@ export default function StudentForm({ id }: { id: string }) {
                       id="cityAndGuildNumber"
                       autoComplete="cityAndGuildNumber"
                       value={cityAndGuildNumber}
-                      onChange={e => setCityAndGuildNumber(e.target.value)}
+                      onChange={(e) => setCityAndGuildNumber(e.target.value)}
                       className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                       placeholder="City And Guild Number"
                     />
@@ -284,10 +330,16 @@ export default function StudentForm({ id }: { id: string }) {
               </div>
 
               <div className="col-span-full">
-                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="photo"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Photo
                 </label>
-                <div {...getRootProps()} className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <div
+                  {...getRootProps()}
+                  className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                >
                   <input {...getInputProps()} />
                   {isDragActive ? (
                     <p className="text-gray-600">Drop the files here ...</p>
@@ -299,16 +351,31 @@ export default function StudentForm({ id }: { id: string }) {
                           className="relative cursor-pointer rounded-md bg-white font-semibold text-brand-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-600 focus-within:ring-offset-2 hover:text-brand-500"
                         >
                           <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only"
-                            {...getInputProps()} />
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            {...getInputProps()}
+                          />
                         </label>
                         <span className="pl-1">or drag and drop</span>
                       </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
-                      {photo && <p className="mt-2 text-sm text-gray-600">{photo.name}</p>}
+                      <p className="text-xs leading-5 text-gray-600">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                      {photo && (
+                        <p className="mt-2 text-sm text-gray-600">
+                          {photo.name}
+                        </p>
+                      )}
                       {photoPreview && (
                         <div className="mt-2">
-                          <img src={photoPreview} alt="Preview" className="w-32 h-32 object-cover rounded-full mx-auto" />
+                          <Image
+                            src={photoPreview}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-full mx-auto"
+                          />
                         </div>
                       )}
                     </div>
@@ -316,17 +383,23 @@ export default function StudentForm({ id }: { id: string }) {
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <QualificationSelect selectedQualification={qualification} setSelectedQualification={setQualification} />
-              </div>
-              <div className="sm:col-span-3">
-                <AccommodationSelect 
-                  selectedAccommodation={accommodation} 
-                  setSelectedAccommodation={setAccommodation} 
-                  currentAccommodation={student?.currentAccommodation || null} 
+                <QualificationSelect
+                  selectedQualification={qualification}
+                  setSelectedQualification={setQualification}
                 />
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="admissionDate" className="block text-sm font-medium leading-6 text-gray-900">
+                <AccommodationSelect
+                  selectedAccommodation={accommodation}
+                  setSelectedAccommodation={setAccommodation}
+                  currentAccommodation={student?.currentAccommodation || null}
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <label
+                  htmlFor="admissionDate"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Admission Date
                 </label>
                 <div className="mt-2">
@@ -336,7 +409,7 @@ export default function StudentForm({ id }: { id: string }) {
                     id="admissionDate"
                     autoComplete="admissionDate"
                     value={admissionDate}
-                    onChange={e => setAdmissionDate(e.target.value)}
+                    onChange={(e) => setAdmissionDate(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -345,12 +418,19 @@ export default function StudentForm({ id }: { id: string }) {
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-            <p className="mt-1 text-sm leading-6 text-gray-600">All The students personal Information</p>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Personal Information
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              All The students personal Information
+            </p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-3">
-                <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   First name *
                 </label>
                 <div className="mt-2">
@@ -360,14 +440,17 @@ export default function StudentForm({ id }: { id: string }) {
                     id="firstName"
                     autoComplete="firstName"
                     value={firstName}
-                    onChange={e => setFirstName(e.target.value)}
+                    onChange={(e) => setFirstName(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="middleName" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="middleName"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Middle name
                 </label>
                 <div className="mt-2">
@@ -377,13 +460,16 @@ export default function StudentForm({ id }: { id: string }) {
                     id="middleName"
                     autoComplete="middleName"
                     value={middleName}
-                    onChange={e => setMiddleName(e.target.value)}
+                    onChange={(e) => setMiddleName(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Last name *
                 </label>
                 <div className="mt-2">
@@ -393,14 +479,17 @@ export default function StudentForm({ id }: { id: string }) {
                     id="lastName"
                     autoComplete="lastName"
                     value={lastName}
-                    onChange={e => setLastName(e.target.value)}
+                    onChange={(e) => setLastName(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="dateOfBirth"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Date of Birth *
                 </label>
                 <div className="mt-2">
@@ -410,14 +499,17 @@ export default function StudentForm({ id }: { id: string }) {
                     id="dateOfBirth"
                     autoComplete="dateOfBirth"
                     value={dateOfBirth}
-                    onChange={e => setDateOfBirth(e.target.value)}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div className="sm:col-span-4">
-                <label htmlFor="idNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="idNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   ID/Passport number *
                 </label>
                 <div className="mt-2">
@@ -427,14 +519,17 @@ export default function StudentForm({ id }: { id: string }) {
                     type="text"
                     autoComplete="idNumber"
                     value={idNumber}
-                    onChange={e => setIdNumber(e.target.value)}
+                    onChange={(e) => setIdNumber(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div className="sm:col-span-4">
-                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Email address
                 </label>
                 <div className="mt-2">
@@ -444,13 +539,16 @@ export default function StudentForm({ id }: { id: string }) {
                     type="email"
                     autoComplete="email"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="sm:col-span-4">
-                <label htmlFor="mobileNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="mobileNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Phone Number *
                 </label>
                 <div className="mt-2">
@@ -460,14 +558,17 @@ export default function StudentForm({ id }: { id: string }) {
                     type="text"
                     autoComplete="mobileNumber"
                     value={mobileNumber}
-                    onChange={e => setMobileNumber(e.target.value)}
+                    onChange={(e) => setMobileNumber(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     required
                   />
                 </div>
               </div>
               <div className="sm:col-span-2 sm:col-start-1">
-                <label htmlFor="homeLanguage" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="homeLanguage"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Home Language
                 </label>
                 <div className="mt-2">
@@ -477,13 +578,16 @@ export default function StudentForm({ id }: { id: string }) {
                     id="homeLanguage"
                     autoComplete="homeLanguage"
                     value={homeLanguage}
-                    onChange={e => setHomeLanguage(e.target.value)}
+                    onChange={(e) => setHomeLanguage(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
               <div className="sm:col-span-3">
-                <label htmlFor="gender" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="gender"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Gender *
                 </label>
                 <div className="mt-2">
@@ -492,7 +596,7 @@ export default function StudentForm({ id }: { id: string }) {
                     name="gender"
                     autoComplete="gender"
                     value={gender}
-                    onChange={e => setGender(e.target.value)}
+                    onChange={(e) => setGender(e.target.value)}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:max-w-xs sm:text-sm sm:leading-6"
                     required
                   >
@@ -507,11 +611,23 @@ export default function StudentForm({ id }: { id: string }) {
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Address Information</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Address Information
+            </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              <button type="button" onClick={() => setShowAddress(!showAddress)} className="flex items-center text-sm font-semibold leading-6 text-gray-900 mt-4">
-                {showAddress ? 'Hide Student\'s Address Information' : 'Show Student\'s Address Information'}
-                {showAddress ? <FiChevronUp className="ml-1" /> : <FiChevronDown className="ml-1" />}
+              <button
+                type="button"
+                onClick={() => setShowAddress(!showAddress)}
+                className="flex items-center text-sm font-semibold leading-6 text-gray-900 mt-4"
+              >
+                {showAddress
+                  ? "Hide Student's Address Information"
+                  : "Show Student's Address Information"}
+                {showAddress ? (
+                  <FiChevronUp className="ml-1" />
+                ) : (
+                  <FiChevronDown className="ml-1" />
+                )}
               </button>
             </p>
             {showAddress && (
@@ -527,7 +643,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressStreet1"
                       placeholder="Street Address 1"
                       value={address.street1}
-                      onChange={e => setAddress({ ...address, street1: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, street1: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <input
@@ -536,7 +654,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressStreet2"
                       placeholder="Street Address 2"
                       value={address.street2}
-                      onChange={e => setAddress({ ...address, street2: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, street2: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <input
@@ -545,7 +665,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressCity"
                       placeholder="City"
                       value={address.city}
-                      onChange={e => setAddress({ ...address, city: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, city: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <input
@@ -554,7 +676,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressProvince"
                       placeholder="Province"
                       value={address.province}
-                      onChange={e => setAddress({ ...address, province: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, province: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <input
@@ -563,7 +687,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressCountry"
                       placeholder="Country"
                       value={address.country}
-                      onChange={e => setAddress({ ...address, country: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, country: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <input
@@ -572,7 +698,9 @@ export default function StudentForm({ id }: { id: string }) {
                       id="addressPostalCode"
                       placeholder="Postal Code"
                       value={address.postalCode}
-                      onChange={e => setAddress({ ...address, postalCode: e.target.value })}
+                      onChange={(e) =>
+                        setAddress({ ...address, postalCode: e.target.value })
+                      }
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                     />
                     <div className="flex items-center mt-2">
@@ -588,7 +716,10 @@ export default function StudentForm({ id }: { id: string }) {
                         }}
                         className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded"
                       />
-                      <label htmlFor="useAsPostalAddress" className="ml-2 block text-sm text-gray-900">
+                      <label
+                        htmlFor="useAsPostalAddress"
+                        className="ml-2 block text-sm text-gray-900"
+                      >
                         Use as Postal Address
                       </label>
                     </div>
@@ -607,7 +738,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressStreet1"
                           placeholder="Street Address 1"
                           value={postalAddress.street1}
-                          onChange={e => setPostalAddress({ ...postalAddress, street1: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              street1: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                         <input
@@ -616,7 +752,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressStreet2"
                           placeholder="Street Address 2"
                           value={postalAddress.street2}
-                          onChange={e => setPostalAddress({ ...postalAddress, street2: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              street2: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                         <input
@@ -625,7 +766,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressCity"
                           placeholder="City"
                           value={postalAddress.city}
-                          onChange={e => setPostalAddress({ ...postalAddress, city: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              city: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                         <input
@@ -634,7 +780,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressProvince"
                           placeholder="Province"
                           value={postalAddress.province}
-                          onChange={e => setPostalAddress({ ...postalAddress, province: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              province: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                         <input
@@ -643,7 +794,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressCountry"
                           placeholder="Country"
                           value={postalAddress.country}
-                          onChange={e => setPostalAddress({ ...postalAddress, country: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              country: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                         <input
@@ -652,7 +808,12 @@ export default function StudentForm({ id }: { id: string }) {
                           id="postalAddressPostalCode"
                           placeholder="Postal Code"
                           value={postalAddress.postalCode}
-                          onChange={e => setPostalAddress({ ...postalAddress, postalCode: e.target.value })}
+                          onChange={(e) =>
+                            setPostalAddress({
+                              ...postalAddress,
+                              postalCode: e.target.value,
+                            })
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                       </div>
@@ -664,16 +825,23 @@ export default function StudentForm({ id }: { id: string }) {
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Parent/Guardian/Sponsor</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Parent/Guardian/Sponsor
+            </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               Details about the students Parent/Guardian/Sponsor
             </p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               {guardians.map((guardian, index) => (
-                <div key={index} className="sm:col-span-6 border-b border-gray-300 pb-4">
+                <div
+                  key={index}
+                  className="sm:col-span-6 border-b border-gray-300 pb-4"
+                >
                   <fieldset>
-                    <legend className="text-sm font-semibold leading-6 text-gray-900">{`Guardian ${guardians.length > 1 ? index + 1 : ''}`}</legend>
+                    <legend className="text-sm font-semibold leading-6 text-gray-900">{`Guardian ${
+                      guardians.length > 1 ? index + 1 : ""
+                    }`}</legend>
                     <div className="mt-6 space-y-6">
                       <div className="flex items-center gap-x-3">
                         <input
@@ -681,11 +849,20 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianType-${index}`}
                           type="radio"
                           value="Father"
-                          checked={guardian.relation === 'Father'}
-                          onChange={e => handleGuardianChange(index, 'relation', e.target.value)}
+                          checked={guardian.relation === "Father"}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "relation",
+                              e.target.value
+                            )
+                          }
                           className="h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-600"
                         />
-                        <label htmlFor={`guardianTypeFather-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                        <label
+                          htmlFor={`guardianTypeFather-${index}`}
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
                           Father
                         </label>
                       </div>
@@ -695,11 +872,20 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianType-${index}`}
                           type="radio"
                           value="Mother"
-                          checked={guardian.relation === 'Mother'}
-                          onChange={e => handleGuardianChange(index, 'relation', e.target.value)}
+                          checked={guardian.relation === "Mother"}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "relation",
+                              e.target.value
+                            )
+                          }
                           className="h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-600"
                         />
-                        <label htmlFor={`guardianTypeMother-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                        <label
+                          htmlFor={`guardianTypeMother-${index}`}
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
                           Mother
                         </label>
                       </div>
@@ -709,17 +895,29 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianType-${index}`}
                           type="radio"
                           value="Other"
-                          checked={guardian.relation === 'Other'}
-                          onChange={e => handleGuardianChange(index, 'relation', e.target.value)}
+                          checked={guardian.relation === "Other"}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "relation",
+                              e.target.value
+                            )
+                          }
                           className="h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-600"
                         />
-                        <label htmlFor={`guardianTypeOther-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                        <label
+                          htmlFor={`guardianTypeOther-${index}`}
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
                           Other
                         </label>
                       </div>
                     </div>
                     <div className="mt-4">
-                      <label htmlFor={`guardianFirstName-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                      <label
+                        htmlFor={`guardianFirstName-${index}`}
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
                         First name *
                       </label>
                       <div className="mt-2">
@@ -728,14 +926,23 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianFirstName-${index}`}
                           id={`guardianFirstName-${index}`}
                           value={guardian.firstName}
-                          onChange={e => handleGuardianChange(index, 'firstName', e.target.value)}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "firstName",
+                              e.target.value
+                            )
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                           required
                         />
                       </div>
                     </div>
                     <div className="mt-4">
-                      <label htmlFor={`guardianLastName-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                      <label
+                        htmlFor={`guardianLastName-${index}`}
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
                         Last name *
                       </label>
                       <div className="mt-2">
@@ -744,14 +951,23 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianLastName-${index}`}
                           id={`guardianLastName-${index}`}
                           value={guardian.lastName}
-                          onChange={e => handleGuardianChange(index, 'lastName', e.target.value)}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "lastName",
+                              e.target.value
+                            )
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                           required
                         />
                       </div>
                     </div>
                     <div className="mt-4">
-                      <label htmlFor={`guardianEmail-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                      <label
+                        htmlFor={`guardianEmail-${index}`}
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
                         Email address
                       </label>
                       <div className="mt-2">
@@ -760,13 +976,18 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianEmail-${index}`}
                           id={`guardianEmail-${index}`}
                           value={guardian.email}
-                          onChange={e => handleGuardianChange(index, 'email', e.target.value)}
+                          onChange={(e) =>
+                            handleGuardianChange(index, "email", e.target.value)
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                       </div>
                     </div>
                     <div className="mt-4">
-                      <label htmlFor={`guardianPhoneNumber-${index}`} className="block text-sm font-medium leading-6 text-gray-900">
+                      <label
+                        htmlFor={`guardianPhoneNumber-${index}`}
+                        className="block text-sm font-medium leading-6 text-gray-900"
+                      >
                         Phone Number
                       </label>
                       <div className="mt-2">
@@ -775,7 +996,13 @@ export default function StudentForm({ id }: { id: string }) {
                           name={`guardianPhoneNumber-${index}`}
                           id={`guardianPhoneNumber-${index}`}
                           value={guardian.mobileNumber}
-                          onChange={e => handleGuardianChange(index, 'mobileNumber', e.target.value)}
+                          onChange={(e) =>
+                            handleGuardianChange(
+                              index,
+                              "mobileNumber",
+                              e.target.value
+                            )
+                          }
                           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-brand-600 sm:text-sm sm:leading-6"
                         />
                       </div>
@@ -804,7 +1031,11 @@ export default function StudentForm({ id }: { id: string }) {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={() => router.push(`/admin/students/${id}`)}>
+          <button
+            type="button"
+            className="text-sm font-semibold leading-6 text-gray-900"
+            onClick={() => router.push(`/admin/students/${id}`)}
+          >
             Cancel
           </button>
           <button
@@ -833,7 +1064,7 @@ export default function StudentForm({ id }: { id: string }) {
                 ></path>
               </svg>
             ) : (
-              'Save'
+              "Save"
             )}
           </button>
         </div>

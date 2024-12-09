@@ -1,12 +1,9 @@
-import ChnageInakegroup from './components/ChnageIntakegroup';
+import ChnageInakegroup from "./components/ChnageIntakegroup";
 
 export default async function adminChangeStudentIntakegroup() {
-
-    return (
-            <div>
-             <ChnageInakegroup/>
-            </div>
-
-    )
-  }
-  
+  return (
+    <div>
+      <ChnageInakegroup />
+    </div>
+  );
+}

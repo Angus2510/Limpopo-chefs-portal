@@ -1,13 +1,16 @@
-import StudentView from './components/StudentView';
+import StudentView from "./components/StudentView";
 
-
-export default async function AlumniView({ params }: { params: { id: string } }) {
+export default async function AlumniView({
+  params,
+}: {
+  params: { id: string };
+}) {
   const studentId = params.id;
-    return (
+  return (
+    <div>
       <div>
-        <div>
-         <StudentView alumniId={studentId}/>
-         </div>
-       </div>
-    )
-  }
+        <StudentView alumniId={studentId} />
+      </div>
+    </div>
+  );
+}

@@ -1,53 +1,69 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Card from '@/components/card';
-import StudentSelect from '@/components/select/StudentSelect';
-import { useGetAccommodationByIdQuery, useUpdateAccommodationMutation } from '@/lib/features/accommodation/accommodationApiSlice';
+import React, { useState, useEffect } from "react"; // Importing React and hooks for managing state and lifecycle.
+import { useRouter, useParams } from "next/navigation"; // Importing router and parameters for navigation and dynamic routing.
+import Card from "@/components/card"; // Custom Card component for consistent UI styling.
+import StudentSelect from "@/components/select/StudentSelect"; // Custom component to select students.
+import {
+  useGetAccommodationByIdQuery,
+  useUpdateAccommodationMutation,
+} from "@/lib/features/accommodation/accommodationApiSlice"; // RTK Query hooks for fetching and updating accommodation data.
 
-const EditAccommodation = ({id}) => {
-  const router = useRouter();
+const EditAccommodation = ({ id }) => {
+  const router = useRouter(); // For navigation.
+  // Fetch accommodation data by ID and handle loading or error states.
   const { data, isLoading, isError, error } = useGetAccommodationByIdQuery(id);
-  const [updateAccommodation, { isLoading: isUpdating }] = useUpdateAccommodationMutation();
+  // Mutation hook for updating accommodation data.
+  const [updateAccommodation, { isLoading: isUpdating }] =
+    useUpdateAccommodationMutation();
 
-  const [roomNumber, setRoomNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [roomType, setRoomType] = useState('');
-  const [occupantType, setOccupantType] = useState('Single');
-  const [occupantNumber, setOccupantNumber] = useState(1);
-  const [costPerBed, setCostPerBed] = useState('');
-  const [selectedStudents, setSelectedStudents] = useState([]);
+  // State variables to store form inputs.
+  const [roomNumber, setRoomNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [roomType, setRoomType] = useState("");
+  const [occupantType, setOccupantType] = useState("Single"); // Defaulting to 'Single'.
+  const [occupantNumber, setOccupantNumber] = useState(1); // Default to 1 for number of occupants.
+  const [costPerBed, setCostPerBed] = useState("");
+  const [selectedStudents, setSelectedStudents] = useState([]); // For managing selected students.
 
+  // Fetch and populate form fields when data is available.
   useEffect(() => {
     if (data) {
       const accommodation = data.entities[id];
       if (accommodation) {
-        console.log('Accommodation data:', accommodation);
+        console.log("Accommodation data:", accommodation); // Debugging data to ensure correct fetch.
 
-        setRoomNumber(accommodation.roomNumber || '');
-        setAddress(accommodation.address || '');
-        setRoomType(accommodation.roomType || '');
-        setOccupantType(accommodation.occupantType || 'Single');
-        setOccupantNumber(accommodation.numberOfOccupants || 1);
-        setCostPerBed(accommodation.costPerBed || '');
-        setSelectedStudents(accommodation.occupants ? accommodation.occupants.map((occupant) => occupant._id) : []);
+        setRoomNumber(accommodation.roomNumber || ""); // Populate room number.
+        setAddress(accommodation.address || ""); // Populate address.
+        setRoomType(accommodation.roomType || ""); // Populate room type.
+        setOccupantType(accommodation.occupantType || "Single"); // Populate occupant type.
+        setOccupantNumber(accommodation.numberOfOccupants || 1); // Populate number of occupants.
+        setCostPerBed(accommodation.costPerBed || ""); // Populate cost per bed.
+        setSelectedStudents(
+          accommodation.occupants
+            ? accommodation.occupants.map((occupant) => occupant._id)
+            : []
+        ); // Populate selected students.
       }
     }
-  }, [data, id]);
+  }, [data, id]); // Dependencies ensure this runs only when data or ID changes.
 
+  // Handle cancelling the edit and navigate back to accommodation list.
   const handleCancelClick = () => {
-    router.push('/admin/accommodation');
+    router.push("/admin/accommodation");
   };
 
+  // Handle form submission to update accommodation.
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission.
 
+    // Validation: Ensure selected students do not exceed occupant number.
     if (selectedStudents.length > occupantNumber) {
-      alert('The number of selected students exceeds the number of occupants.');
+      alert("The number of selected students exceeds the number of occupants.");
       return;
     }
 
+    // Prepare form data for submission.
     const formData = {
       roomNumber,
       address,
@@ -55,22 +71,26 @@ const EditAccommodation = ({id}) => {
       occupantType,
       numberOfOccupants: occupantNumber,
       costPerBed,
-      occupantIds: selectedStudents,
+      occupantIds: selectedStudents, // Pass student IDs for backend processing.
     };
 
-    console.log('Form Data:', formData);
+    console.log("Form Data:", formData); // Debugging form data.
 
     try {
-      await updateAccommodation({ id, ...formData }).unwrap();
-      alert(`Accommodation with room number ${roomNumber} updated successfully!`);
-      router.push('/admin/admin/accommodation');
+      await updateAccommodation({ id, ...formData }).unwrap(); // Perform the update operation.
+      alert(
+        `Accommodation with room number ${roomNumber} updated successfully!`
+      ); // Notify user of success.
+      router.push("/admin/admin/accommodation"); // Navigate back to accommodation list.
     } catch (err) {
-      console.error('Failed to update accommodation:', err);
-      alert('Failed to update accommodation. Please try again.');
+      console.error("Failed to update accommodation:", err); // Log error.
+      alert("Failed to update accommodation. Please try again."); // Notify user of failure.
     }
   };
 
+  // Show loading state if data is being fetched.
   if (isLoading) return <div>Loading...</div>;
+  // Show error state if data fetching fails.
   if (isError) return <div>Error loading accommodation: {error.message}</div>;
 
   return (
@@ -80,12 +100,17 @@ const EditAccommodation = ({id}) => {
         <div className="space-y-4">
           {/* Room number input */}
           <div>
-            <label htmlFor="roomNumber" className="block text-sm font-medium text-gray-700">Room Number</label>
+            <label
+              htmlFor="roomNumber"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Room Number
+            </label>
             <input
               type="text"
               id="roomNumber"
               value={roomNumber}
-              onChange={e => setRoomNumber(e.target.value)}
+              onChange={(e) => setRoomNumber(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
               required
             />
@@ -93,24 +118,34 @@ const EditAccommodation = ({id}) => {
 
           {/* Address input */}
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Address
+            </label>
             <input
               type="text"
               id="address"
               value={address}
-              onChange={e => setAddress(e.target.value)}
+              onChange={(e) => setAddress(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
               required
             />
           </div>
 
-          {/* Room type input */}
+          {/* Room gender input */}
           <div>
-            <label htmlFor="roomType" className="block text-sm font-medium text-gray-700">Room Gender</label>
+            <label
+              htmlFor="roomType"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Room Gender
+            </label>
             <select
               id="roomType"
               value={roomType}
-              onChange={e => setRoomType(e.target.value)}
+              onChange={(e) => setRoomType(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
               required
             >
@@ -120,13 +155,18 @@ const EditAccommodation = ({id}) => {
             </select>
           </div>
 
-          {/* Occupant type input */}
+          {/* Room type input */}
           <div>
-            <label htmlFor="occupantType" className="block text-sm font-medium text-gray-700">Room Type</label>
+            <label
+              htmlFor="occupantType"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Room Type
+            </label>
             <select
               id="occupantType"
               value={occupantType}
-              onChange={e => setOccupantType(e.target.value)}
+              onChange={(e) => setOccupantType(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
             >
               <option value="Single">Single</option>
@@ -135,15 +175,20 @@ const EditAccommodation = ({id}) => {
             </select>
           </div>
 
-          {/* Occupant number input - conditionally render */}
-          {occupantType === 'Sharing' && (
+          {/* Conditionally render occupant number input for shared rooms */}
+          {occupantType === "Sharing" && (
             <div>
-              <label htmlFor="occupantNumber" className="block text-sm font-medium text-gray-700">Number of Occupants</label>
+              <label
+                htmlFor="occupantNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Number of Occupants
+              </label>
               <input
                 type="number"
                 id="occupantNumber"
                 value={occupantNumber}
-                onChange={e => setOccupantNumber(parseInt(e.target.value))}
+                onChange={(e) => setOccupantNumber(parseInt(e.target.value))}
                 min="1"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
               />
@@ -152,12 +197,17 @@ const EditAccommodation = ({id}) => {
 
           {/* Cost per bed input */}
           <div>
-            <label htmlFor="costPerBed" className="block text-sm font-medium text-gray-700">Cost Per Bed</label>
+            <label
+              htmlFor="costPerBed"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Cost Per Bed
+            </label>
             <input
               type="text"
               id="costPerBed"
               value={costPerBed}
-              onChange={e => setCostPerBed(e.target.value)}
+              onChange={(e) => setCostPerBed(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
               required
             />
@@ -165,9 +215,13 @@ const EditAccommodation = ({id}) => {
 
           {/* Student select input */}
           <div>
-            <StudentSelect selectedStudents={selectedStudents} setSelectedStudents={setSelectedStudents} />
+            <StudentSelect
+              selectedStudents={selectedStudents}
+              setSelectedStudents={setSelectedStudents}
+            />
           </div>
         </div>
+
         {/* Submit and cancel buttons */}
         <div className="mt-6 flex justify-end">
           <button

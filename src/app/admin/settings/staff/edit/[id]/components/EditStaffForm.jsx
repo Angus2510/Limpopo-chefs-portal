@@ -1,34 +1,40 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { useRouter } from 'next/navigation';
-import Card from '@/components/card/index';
-import RoleSelect from '@/components/select/RoleSelect';
-import IndividualRoles from './SingleUserRoles';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { useGetStaffByIdQuery, useUpdateStaffMutation } from '@/lib/features/staff/staffApiSlice';
+import React, { useState, useCallback, useEffect } from "react";
+import { useDropzone } from "react-dropzone";
+import { useRouter } from "next/navigation";
+import Card from "@/components/card/index";
+import RoleSelect from "@/components/select/RoleSelect";
+import IndividualRoles from "./SingleUserRoles";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import {
+  useGetStaffByIdQuery,
+  useUpdateStaffMutation,
+} from "@/lib/features/staff/staffApiSlice";
+import Image from "next/image";
 
 export default function EditStaffForm({ id }) {
-  const { data: staffData, isSuccess: isStaffSuccess } = useGetStaffByIdQuery(id);
-  const [updateStaff, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateStaffMutation();
+  const { data: staffData, isSuccess: isStaffSuccess } =
+    useGetStaffByIdQuery(id);
+  const [updateStaff, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] =
+    useUpdateStaffMutation();
   const router = useRouter();
 
   // Staff Member State
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [idNumber, setIdNumber] = useState(''); 
-  const [email, setEmail] = useState(''); 
-  const [gender, setGender] = useState('');
-  const [homeLanguage, setHomeLanguage] = useState('');
-  const [position, setPosition] = useState('');
-  const [department, setDepartment] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [homeLanguage, setHomeLanguage] = useState("");
+  const [position, setPosition] = useState("");
+  const [department, setDepartment] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [showIndividualRoles, setShowIndividualRoles] = useState(false);
   const [permissions, setPermissions] = useState({});
@@ -66,11 +72,14 @@ export default function EditStaffForm({ id }) {
       setPhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
     } else {
-      alert('File is too large. Maximum size is 5MB.');
+      alert("File is too large. Maximum size is 5MB.");
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: 'image/*' });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: "image/*",
+  });
 
   const handlePermissionChange = (page, permission) => {
     setPermissions((prev) => ({
@@ -84,59 +93,71 @@ export default function EditStaffForm({ id }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const formData = new FormData();
-  
-      if (photo) formData.append('photo', photo);
-  
-      formData.append('username', username);
-      formData.append('email', email);
-      formData.append('profile[firstName]', firstName);
-      formData.append('profile[lastName]', lastName);
-      formData.append('profile[dateOfBirth]', dateOfBirth);
-      formData.append('profile[idNumber]', idNumber);
-      formData.append('profile[gender]', gender);
-      formData.append('profile[homeLanguage]', homeLanguage);
-      formData.append('profile[position]', position);
-      formData.append('profile[department]', department);
-      formData.append('profile[designation]', designation);
-      formData.append('profile[mobileNumber]', mobileNumber);
+
+      if (photo) formData.append("photo", photo);
+
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("profile[firstName]", firstName);
+      formData.append("profile[lastName]", lastName);
+      formData.append("profile[dateOfBirth]", dateOfBirth);
+      formData.append("profile[idNumber]", idNumber);
+      formData.append("profile[gender]", gender);
+      formData.append("profile[homeLanguage]", homeLanguage);
+      formData.append("profile[position]", position);
+      formData.append("profile[department]", department);
+      formData.append("profile[designation]", designation);
+      formData.append("profile[mobileNumber]", mobileNumber);
       selectedRoles.forEach((role, index) => {
         formData.append(`roles[${index}]`, role);
       });
-  
+
       const userPermissionsArray = Object.keys(permissions).map((page) => ({
         page,
         permissions: permissions[page],
       }));
-  
-      formData.append('userPermissions', JSON.stringify(userPermissionsArray));
-  
+
+      formData.append("userPermissions", JSON.stringify(userPermissionsArray));
+
       await updateStaff({ id: id, formData }).unwrap();
-      alert('Staff member updated successfully');
-      router.push('/admin/settings/staff'); // Redirect after success
+      alert("Staff member updated successfully");
+      router.push("/admin/settings/staff"); // Redirect after success
     } catch (error) {
-      alert('Failed to update staff member');
+      alert("Failed to update staff member");
     }
   };
 
   return (
     <Card>
-      <form className="m-10" onSubmit={handleSubmit} encType="multipart/form-data">
+      <form
+        className="m-10"
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+      >
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Staff Member Information</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Staff Member Information
+            </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
               All the details about the staff member
             </p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="col-span-full">
-                <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="photo"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Photo
                 </label>
-                <div {...getRootProps()} className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <div
+                  {...getRootProps()}
+                  className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                >
                   <input {...getInputProps()} />
                   {isDragActive ? (
                     <p className="text-gray-600">Drop the files here ...</p>
@@ -158,11 +179,21 @@ export default function EditStaffForm({ id }) {
                         </label>
                         <span className="pl-1">or drag and drop</span>
                       </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 5MB</p>
-                      {photo && <p className="mt-2 text-sm text-gray-600">{photo.name}</p>}
+                      <p className="text-xs leading-5 text-gray-600">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                      {photo && (
+                        <p className="mt-2 text-sm text-gray-600">
+                          {photo.name}
+                        </p>
+                      )}
                       {photoPreview && (
                         <div className="mt-2">
-                          <img src={photoPreview} alt="Preview" className="w-32 h-32 object-cover rounded-full mx-auto" />
+                          <Image
+                            src={photoPreview}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-full mx-auto"
+                          />
                         </div>
                       )}
                     </div>
@@ -171,7 +202,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Username
                 </label>
                 <div className="mt-2">
@@ -188,7 +222,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   First name
                 </label>
                 <div className="mt-2">
@@ -205,7 +242,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Last name
                 </label>
                 <div className="mt-2">
@@ -222,7 +262,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="dateOfBirth"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Date of Birth
                 </label>
                 <div className="mt-2">
@@ -238,7 +281,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="gender" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="gender"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Gender
                 </label>
                 <div className="mt-2">
@@ -259,7 +305,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="idNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="idNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   ID Number
                 </label>
                 <div className="mt-2">
@@ -275,7 +324,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Email address
                 </label>
                 <div className="mt-2">
@@ -292,7 +344,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="homeLanguage" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="homeLanguage"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Home Language
                 </label>
                 <div className="mt-2">
@@ -308,7 +363,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="position" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="position"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Position
                 </label>
                 <div className="mt-2">
@@ -324,7 +382,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="department" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="department"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Department
                 </label>
                 <div className="mt-2">
@@ -340,7 +401,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="designation" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="designation"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Designation
                 </label>
                 <div className="mt-2">
@@ -356,7 +420,10 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-3">
-                <label htmlFor="mobileNumber" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="mobileNumber"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Mobile Number
                 </label>
                 <div className="mt-2">
@@ -372,13 +439,18 @@ export default function EditStaffForm({ id }) {
               </div>
 
               <div className="sm:col-span-6">
-                <RoleSelect selectedRoles={selectedRoles} setSelectedRoles={setSelectedRoles} />
+                <RoleSelect
+                  selectedRoles={selectedRoles}
+                  setSelectedRoles={setSelectedRoles}
+                />
               </div>
             </div>
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-gray-900">Add Individual Access</h2>
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              Add Individual Access
+            </h2>
             <button
               className="flex items-center text-sm font-semibold leading-6 text-gray-900 mt-4"
               onClick={(e) => {
@@ -386,8 +458,14 @@ export default function EditStaffForm({ id }) {
                 setShowIndividualRoles(!showIndividualRoles);
               }}
             >
-              {showIndividualRoles ? 'Hide Individual Roles' : 'Show Individual Roles'}
-              {showIndividualRoles ? <FiChevronUp className="ml-1" /> : <FiChevronDown className="ml-1" />}
+              {showIndividualRoles
+                ? "Hide Individual Roles"
+                : "Show Individual Roles"}
+              {showIndividualRoles ? (
+                <FiChevronUp className="ml-1" />
+              ) : (
+                <FiChevronDown className="ml-1" />
+              )}
             </button>
             {showIndividualRoles && (
               <IndividualRoles
@@ -399,7 +477,11 @@ export default function EditStaffForm({ id }) {
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={() => router.push('/admin/settings/staff')}>
+          <button
+            type="button"
+            className="text-sm font-semibold leading-6 text-gray-900"
+            onClick={() => router.push("/admin/settings/staff")}
+          >
             Cancel
           </button>
           <button
@@ -428,7 +510,7 @@ export default function EditStaffForm({ id }) {
                 ></path>
               </svg>
             ) : (
-              'Save'
+              "Save"
             )}
           </button>
         </div>

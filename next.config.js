@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['swartdesign.co.za','swartstudio.co.za','limpopochefs.s3.af-south-1.amazonaws.com'],
+    domains: ["limpopochefs.s3.af-south-1.amazonaws.com"],
     remotePatterns: [
       {
         protocol: "https",

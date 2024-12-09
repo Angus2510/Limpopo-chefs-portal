@@ -1,10 +1,9 @@
-import AccommodationTable from './components/AccommodationTable'
+import AccommodationTable from "./components/AccommodationTable";
 
 export default async function Accommodation() {
-    return (
-            <div>
-                <AccommodationTable/>
-            </div>
-
-    )
-  }
+  return (
+    <div>
+      <AccommodationTable />
+    </div>
+  );
+}

@@ -1,7 +1,15 @@
-import React from 'react';
+import Image from "next/image";
+import React from "react";
 
-export default function MatchingQuestion({ question, questionNumber, mark, options, value, onChange }) {
-  const isImageUrl = (url) => url.startsWith('http');
+export default function MatchingQuestion({
+  question,
+  questionNumber,
+  mark,
+  options,
+  value,
+  onChange,
+}) {
+  const isImageUrl = (url) => url.startsWith("http");
 
   const handleSelectChange = (index, newValue) => {
     const updatedValue = [...value];
@@ -20,21 +28,23 @@ export default function MatchingQuestion({ question, questionNumber, mark, optio
           Match A and B question
         </span>
         <div className="mb-2">
-          <span className="text-lg font-medium text-gray-900">
-            {question}
-          </span>
+          <span className="text-lg font-medium text-gray-900">{question}</span>
         </div>
         <form>
           {options.map((option, index) => (
             <div key={index} className="grid grid-cols-2 gap-4 mb-3">
               {isImageUrl(option.columnA) ? (
-                <img src={option.columnA} alt={`Option ${index + 1} A`} className="w-24 h-24 object-cover" />
+                <Image
+                  src={option.columnA}
+                  alt={`Option ${index + 1} A`}
+                  className="w-24 h-24 object-cover"
+                />
               ) : (
                 <span className="text-gray-700">{option.columnA}</span>
               )}
               <select
                 className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={value[index]?.pairTwo || ''}
+                value={value[index]?.pairTwo || ""}
                 onChange={(e) => handleSelectChange(index, e.target.value)}
               >
                 <option value="">Choose a match</option>
@@ -42,7 +52,11 @@ export default function MatchingQuestion({ question, questionNumber, mark, optio
                   <option key={idx} value={opt.columnB}>
                     {isImageUrl(opt.columnB) ? (
                       <span>
-                        <img src={opt.columnB} alt={`Option ${idx + 1} B`} className="w-24 h-24 object-cover inline" />
+                        <Image
+                          src={opt.columnB}
+                          alt={`Option ${idx + 1} B`}
+                          className="w-24 h-24 object-cover inline"
+                        />
                         {opt.columnB}
                       </span>
                     ) : (
@@ -57,7 +71,7 @@ export default function MatchingQuestion({ question, questionNumber, mark, optio
       </div>
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium text-gray-600">
-         {numericMark} {numericMark === 1 ? 'Mark' : 'Marks'}
+          {numericMark} {numericMark === 1 ? "Mark" : "Marks"}
         </span>
       </div>
     </div>

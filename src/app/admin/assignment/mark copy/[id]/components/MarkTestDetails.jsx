@@ -1,16 +1,20 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useGetResultByIdQuery, useUpdateResultByIdMutation, useUpdateModeratedMarksByIdMutation } from '@/lib/features/assignment/assignmentsResultsApiSlice';
-import CommentsSection from './CommentsSection';
-import TestDetailsSection from './TestDetailsSection';
-import TestSection from './TestSection';
-import TestModerationSection from './TestModerationSection';
+import React, { useState, useEffect } from "react";
+import {
+  useGetResultByIdQuery,
+  useUpdateResultByIdMutation,
+  useUpdateModeratedMarksByIdMutation,
+} from "@/lib/features/assignment/assignmentsResultsApiSlice";
+import CommentsSection from "./CommentsSection";
+import TestDetailsSection from "./TestDetailsSection";
+import TestSection from "./TestSection";
+import TestModerationSection from "./TestModerationSection";
 
-function TestDetailsForm({ id, staffId}) {
+function TestDetailsForm({ id, staffId }) {
   const { data: result, isLoading, isError } = useGetResultByIdQuery(id);
   const [submittedComments, setSubmittedComments] = useState([]);
-  const [marks, setMarks] = useState([]); 
+  const [marks, setMarks] = useState([]);
   const [moderatedMarks, setModeratedMarks] = useState([]);
   const [totalMarks, setTotalMarks] = useState(0);
   const [totalModeratedMarks, setTotalModeratedMarks] = useState(0);
@@ -23,27 +27,38 @@ function TestDetailsForm({ id, staffId}) {
 
   useEffect(() => {
     if (result) {
-      console.log('Fetched Result:', result); 
+      console.log("Fetched Result:", result);
       setSubmittedComments(result.studentDetails.feedback || []);
-      const initialMarks = result.questions.map(question => ({
+      const initialMarks = result.questions.map((question) => ({
         answerId: question.studentAnswer._id,
         score: question.score || 0,
         moderatedScore: question.moderatedScore || 0,
       }));
       setMarks(initialMarks);
-      if (result.status === 'Moderated') {
-        setModeratedMarks(initialMarks.map(mark => ({
-          answerId: mark.answerId,
-          score: mark.moderatedScore,
-        })));
-        setTotalModeratedMarks(initialMarks.reduce((acc, curr) => acc + curr.moderatedScore, 0));
+      if (result.status === "Moderated") {
+        setModeratedMarks(
+          initialMarks.map((mark) => ({
+            answerId: mark.answerId,
+            score: mark.moderatedScore,
+          }))
+        );
+        setTotalModeratedMarks(
+          initialMarks.reduce((acc, curr) => acc + curr.moderatedScore, 0)
+        );
         setIsModerating(true);
       } else {
         setModeratedMarks(initialMarks);
-        setTotalModeratedMarks(initialMarks.reduce((acc, curr) => acc + curr.score, 0));
+        setTotalModeratedMarks(
+          initialMarks.reduce((acc, curr) => acc + curr.score, 0)
+        );
       }
       setTotalMarks(initialMarks.reduce((acc, curr) => acc + curr.score, 0));
-      setMaxTotalMarks(result.questions.reduce((acc, question) => acc + (parseFloat(question.mark) || 0), 0));
+      setMaxTotalMarks(
+        result.questions.reduce(
+          (acc, question) => acc + (parseFloat(question.mark) || 0),
+          0
+        )
+      );
     }
   }, [result]);
 
@@ -51,11 +66,13 @@ function TestDetailsForm({ id, staffId}) {
     const newMarks = isModerated ? [...moderatedMarks] : [...marks];
     newMarks[index] = {
       ...newMarks[index],
-      score: parseFloat(value) || 0, 
+      score: parseFloat(value) || 0,
     };
     if (isModerated) {
       setModeratedMarks(newMarks);
-      setTotalModeratedMarks(newMarks.reduce((acc, curr) => acc + curr.score, 0));
+      setTotalModeratedMarks(
+        newMarks.reduce((acc, curr) => acc + curr.score, 0)
+      );
     } else {
       setMarks(newMarks);
       setTotalMarks(newMarks.reduce((acc, curr) => acc + curr.score, 0));
@@ -73,12 +90,12 @@ function TestDetailsForm({ id, staffId}) {
         answers: updatedAnswers,
       };
 
-      console.log('Submitting updated marks with payload:', payload);
+      console.log("Submitting updated marks with payload:", payload);
 
       await updateResultById({ id, data: payload }).unwrap();
-      alert('Marks submitted successfully!');
+      alert("Marks submitted successfully!");
     } catch (err) {
-      console.error('Failed to submit marks:', err);
+      console.error("Failed to submit marks:", err);
     }
   };
 
@@ -91,16 +108,16 @@ function TestDetailsForm({ id, staffId}) {
 
       const payload = {
         answers: updatedModeratedMarks,
-        lecturerId:staffId,
+        lecturerId: staffId,
         resultsId: id,
       };
 
-      console.log('Submitting moderated marks with payload:', payload);
+      console.log("Submitting moderated marks with payload:", payload);
 
       await updateModeratedMarksById({ id, data: payload }).unwrap();
-      alert('Moderated marks submitted successfully!');
+      alert("Moderated marks submitted successfully!");
     } catch (err) {
-      console.error('Failed to submit moderated marks:', err);
+      console.error("Failed to submit moderated marks:", err);
     }
   };
 
@@ -120,7 +137,7 @@ function TestDetailsForm({ id, staffId}) {
     <div className="max-w-5xl mx-auto py-8 px-4">
       <TestDetailsSection result={result} />
 
-     {result.status !=="Moderated" && !showModeration && (
+      {result.status !== "Moderated" && !showModeration && (
         <TestSection
           result={result}
           marks={marks}
@@ -129,22 +146,22 @@ function TestDetailsForm({ id, staffId}) {
           handleMarksChange={handleMarksChange}
           handleSubmitMarks={handleSubmitMarks}
         />
-
-        
       )}
 
-    {result.status !== "Moderated" && !showModeration && result.status === "Marked" && (
-    <div className="mt-8">
-      <button
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleModerateButtonClick}
-      >
-        Moderate
-      </button>
-    </div>
-      )}
+      {result.status !== "Moderated" &&
+        !showModeration &&
+        result.status === "Marked" && (
+          <div className="mt-8">
+            <button
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              onClick={handleModerateButtonClick}
+            >
+              Moderate
+            </button>
+          </div>
+        )}
 
-      {showModeration || result.status === "Moderated" ?(
+      {showModeration || result.status === "Moderated" ? (
         <TestModerationSection
           result={result}
           marks={marks}
