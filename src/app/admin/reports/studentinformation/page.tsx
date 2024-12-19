@@ -1,11 +1,3 @@
-
 export default async function ReportsStudentInformation() {
-
-    return (
-        <div>
-            reports
-        </div>
-
-    )
-  }
-  
+  return <div>reports</div>;
+}

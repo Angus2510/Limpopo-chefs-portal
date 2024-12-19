@@ -1,46 +1,38 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
-import DataTable from '@/components/tables/BasicTableWithoutSearch'
-import { FiDownload, FiSave, FiUpload, FiEye } from 'react-icons/fi';
-import Card from '@/components/card/index';
-import StudentResultsTable from './StudentsResultsTable';
-
-import { 
-  useGetGeneralDocumentsByStudentIdQuery, 
-  useGetLegalDocumentsByStudentIdQuery, 
-  useLazyDownloadGeneralDocumentQuery, 
-  useLazyDownloadLegalDocumentQuery 
-} from '@/lib/features/students/studentsDocumentsApiSlice';
-import StudentWelRecordsTable from './StudentWelRecordsTable';
-
-// Modal.setAppElement('#__next');
+// StudentDetailsTable.js
+import React, { useState, useEffect } from "react";
+import DataTable from "@/components/tables/BasicTableWithoutSearch";
+import { FiDownload, FiSave, FiUpload, FiEye } from "react-icons/fi";
+import Card from "@/components/card/index";
+import StudentResultsTable from "./StudentsResultsTable";
+import {
+  useGetGeneralDocumentsByStudentIdQuery,
+  useGetLegalDocumentsByStudentIdQuery,
+  useLazyDownloadGeneralDocumentQuery,
+  useLazyDownloadLegalDocumentQuery,
+} from "@/lib/features/students/studentsDocumentsApiSlice";
+import { useGenerateSorReportMutation } from "@/lib/features/sor/sorApiSlice";
+import StudentWelRecordsTable from "./StudentWelRecordsTable";
 
 const StudentDetailsTable = ({ studentId }) => {
-  const [activeTab, setActiveTab] = useState('documents');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [triggerDownloadGeneralDocument] = useLazyDownloadGeneralDocumentQuery();
+  const [activeTab, setActiveTab] = useState("documents");
+  const [typeFilter, setTypeFilter] = useState("");
+
+  const [triggerDownloadGeneralDocument] =
+    useLazyDownloadGeneralDocumentQuery();
   const [triggerDownloadLegalDocument] = useLazyDownloadLegalDocumentQuery();
+  const [generateSorReport, { isLoading: isGenerating }] =
+    useGenerateSorReportMutation();
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-
-  const applyFilters = (data) => {
-    let filteredData = Array.isArray(data) ? [...data] : [];
-    if (typeFilter !== '') {
-      filteredData = filteredData.filter(upload => upload.type === typeFilter);
-    }
-    return filteredData;
-  };
-
-  const handleTypeChange = (value) => {
-    setTypeFilter(value);
-  };
-
-  const { data: generalDocumentsData = {}, isLoading: isLoadingGeneral, isError: isErrorGeneral } = useGetGeneralDocumentsByStudentIdQuery(studentId);
-  const { data: legalDocumentsData = {}, isLoading: isLoadingLegal, isError: isErrorLegal } = useGetLegalDocumentsByStudentIdQuery(studentId);
+  const {
+    data: generalDocumentsData = {},
+    isLoading: isLoadingGeneral,
+    isError: isErrorGeneral,
+  } = useGetGeneralDocumentsByStudentIdQuery(studentId);
+  const {
+    data: legalDocumentsData = {},
+    isLoading: isLoadingLegal,
+    isError: isErrorLegal,
+  } = useGetLegalDocumentsByStudentIdQuery(studentId);
 
   useEffect(() => {
     if (isErrorGeneral) {
@@ -51,8 +43,11 @@ const StudentDetailsTable = ({ studentId }) => {
     }
   }, [generalDocumentsData, legalDocumentsData, isErrorGeneral, isErrorLegal]);
 
-  const generalDocuments = generalDocumentsData.ids?.map(id => generalDocumentsData.entities[id]) || [];
-  const legalDocuments = legalDocumentsData.ids?.map(id => legalDocumentsData.entities[id]) || [];
+  const generalDocuments =
+    generalDocumentsData.ids?.map((id) => generalDocumentsData.entities[id]) ||
+    [];
+  const legalDocuments =
+    legalDocumentsData.ids?.map((id) => legalDocumentsData.entities[id]) || [];
 
   const tables = {
     documents: generalDocuments,
@@ -60,127 +55,194 @@ const StudentDetailsTable = ({ studentId }) => {
     WEL: [],
     results: [],
     tasks: [],
+    SOR: [], // SOR section will now be handled directly with the button
   };
 
   const columnsByTab = {
     documents: [
-      { Header: 'Title', accessor: 'title' },
-      { Header: 'Description', accessor: 'description' },
-      { Header: 'Date Uploaded', accessor: 'uploadDate' },
+      { Header: "Title", accessor: "title" },
+      { Header: "Description", accessor: "description" },
+      { Header: "Date Uploaded", accessor: "uploadDate" },
       {
-        Header: 'Action',
-        id: 'action',
-        accessor: () => 'download',
+        Header: "Action",
+        id: "action",
+        accessor: () => "download",
         Cell: ({ row }) => (
           <div className="flex gap-2">
-          <button onClick={() => handleDownload(row.original, 'general')} className="text-blue-500 hover:text-blue-700">
-            <FiDownload />
-          </button>
-          <button onClick={() => handleViewDocument(row.original)} className="text-green-500 hover:text-green-700">
-           <FiEye />
-          </button>
-        </div>
-        )
-      }
+            <button
+              onClick={() => handleDownload(row.original, "general")}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FiDownload />
+            </button>
+            <button
+              onClick={() => handleViewDocument(row.original)}
+              className="text-green-500 hover:text-green-700"
+            >
+              <FiEye />
+            </button>
+          </div>
+        ),
+      },
     ],
     legal: [
-      { Header: 'Title', accessor: 'title' },
-      { Header: 'Description', accessor: 'description' },
-      { Header: 'Date Uploaded', accessor: 'uploadDate' },
+      { Header: "Title", accessor: "title" },
+      { Header: "Description", accessor: "description" },
+      { Header: "Date Uploaded", accessor: "uploadDate" },
       {
-        Header: 'Action',
-        id: 'action',
-        accessor: () => 'download',
+        Header: "Action",
+        id: "action",
+        accessor: () => "download",
         Cell: ({ row }) => (
           <div className="flex gap-2">
-          <button onClick={() => handleDownload(row.original, 'legal')} className="text-blue-500 hover:text-blue-700">
-            <FiDownload />
-          </button>
-          <button onClick={() => handleViewDocument(row.original)} className="text-green-500 hover:text-green-700">
-          <FiEye />
-        </button>
-        </div>
-        )
-      }
+            <button
+              onClick={() => handleDownload(row.original, "legal")}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <FiDownload />
+            </button>
+            <button
+              onClick={() => handleViewDocument(row.original)}
+              className="text-green-500 hover:text-green-700"
+            >
+              <FiEye />
+            </button>
+          </div>
+        ),
+      },
     ],
     results: [
-      { Header: 'Title', accessor: 'title' },
-      { Header: 'Test/Task', accessor: 'testTask' },
-      { Header: 'Outcome', accessor: 'outcome' },
-      { Header: 'Result', accessor: 'result' },
-      { Header: 'Overall Outcome', accessor: 'overallOutcome' },
+      { Header: "Title", accessor: "title" },
+      { Header: "Test/Task", accessor: "testTask" },
+      { Header: "Outcome", accessor: "outcome" },
+      { Header: "Result", accessor: "result" },
+      { Header: "Overall Outcome", accessor: "overallOutcome" },
       {
-        Header: 'Action',
-        id: 'action',
-        accessor: () => 'view',
+        Header: "Action",
+        id: "action",
+        accessor: () => "view",
         Cell: ({ row }) => (
-          <button onClick={() => handleView(row.original)} className="text-blue-500 hover:text-blue-700">
+          <button
+            onClick={() => handleView(row.original)}
+            className="text-blue-500 hover:text-blue-700"
+          >
             View
           </button>
-        )
-      }
+        ),
+      },
     ],
     tasks: [
-      { Header: 'Name', accessor: 'name' },
-      { Header: 'Date', accessor: 'date' },
-      { Header: 'Outcome', accessor: 'outcome' },
-      { Header: 'Marks', accessor: 'marks' },
+      { Header: "Name", accessor: "name" },
+      { Header: "Date", accessor: "date" },
+      { Header: "Outcome", accessor: "outcome" },
+      { Header: "Marks", accessor: "marks" },
       {
-        Header: 'Action',
-        id: 'action',
-        accessor: () => 'view',
+        Header: "Action",
+        id: "action",
+        accessor: () => "view",
         Cell: ({ row }) => (
-          <button onClick={() => handleView(row.original)} className="text-blue-500 hover:text-blue-700">
+          <button
+            onClick={() => handleView(row.original)}
+            className="text-blue-500 hover:text-blue-700"
+          >
             View
           </button>
-        )
-      }
+        ),
+      },
     ],
+    SOR: [
+      {
+        Header: "Action",
+        id: "action",
+        accessor: () => "generate",
+        Cell: () => (
+          <button
+            onClick={handleDownloadSor}
+            disabled={isGenerating}
+            className={`px-4 py-2 rounded ${
+              isGenerating
+                ? "bg-gray-400 text-white"
+                : "bg-purple-500 text-white hover:bg-purple-700"
+            }`}
+          >
+            {isGenerating ? "Generating..." : "Download SOR"}
+          </button>
+        ),
+      },
+    ],
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const applyFilters = (data) => {
+    let filteredData = Array.isArray(data) ? [...data] : [];
+    if (typeFilter !== "") {
+      filteredData = filteredData.filter(
+        (upload) => upload.type === typeFilter
+      );
+    }
+    return filteredData;
+  };
+
+  const handleDownloadSor = async () => {
+    try {
+      await generateSorReport([studentId]).unwrap(); // Trigger SOR report download
+    } catch (error) {
+      console.error("Error generating SOR:", error);
+      alert("Failed to generate SOR. Please try again later.");
+    }
   };
 
   const handleDownload = async (item, type) => {
     try {
-      const response = type === 'general'
-        ? await triggerDownloadGeneralDocument(item.id)
-        : await triggerDownloadLegalDocument(item.id);
+      const response =
+        type === "general"
+          ? await triggerDownloadGeneralDocument(item.id)
+          : await triggerDownloadLegalDocument(item.id);
       if (response.error) {
-        console.error('Error downloading document:', response.error);
-        alert('An error occurred while downloading the document.');
+        console.error("Error downloading document:", response.error);
+        alert("An error occurred while downloading the document.");
       } else {
         const url = response.data.url;
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', item.documentUrl.split('/').pop());
+        link.setAttribute("download", item.documentUrl.split("/").pop());
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       }
     } catch (error) {
-      console.error('Error downloading document:', error);
-      alert('An error occurred while downloading the document.');
+      console.error("Error downloading document:", error);
+      alert("An error occurred while downloading the document.");
     }
   };
 
   const handleViewDocument = (item) => {
     const url = item.signedUrl;
     if (url) {
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     } else {
-      console.error('URL is undefined');
-      alert('The file URL is not available.');
+      console.error("URL is undefined");
+      alert("The file URL is not available.");
     }
   };
-//test
+
   return (
     <>
       <div className="flex justify-center space-x-4">
-        {Object.keys(tables).map(tab => (
+        {Object.keys(tables).map((tab) => (
           <button
             key={tab}
-            className={`py-2 px-4 rounded-lg focus:outline-none ${activeTab === tab ? 'bg-gray-300' : 'bg-gray-100'}`}
+            className={`py-2 px-4 rounded-lg focus:outline-none ${
+              activeTab === tab ? "bg-gray-300" : "bg-gray-100"
+            }`}
             onClick={() => handleTabChange(tab)}
           >
-            {tab === 'tasks' ? 'Tests/Tasks' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === "tasks"
+              ? "Tests/Tasks"
+              : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -188,18 +250,28 @@ const StudentDetailsTable = ({ studentId }) => {
       <Card>
         <div className="mt-4 mb-4 flex justify-between items-center p-5">
           <h1 className="text-xl font-bold">
-            {activeTab === 'documents' ? 'Documents' : activeTab === 'legal' ? 'Legal Documents' : activeTab === 'WEL' ? 'W.E.L' : activeTab === 'results' ? 'Results' : 'Tests/Tasks'}
+            {activeTab === "documents"
+              ? "Documents"
+              : activeTab === "legal"
+              ? "Legal Documents"
+              : activeTab === "WEL"
+              ? "W.E.L"
+              : activeTab === "results"
+              ? "Results"
+              : activeTab === "SOR"
+              ? "SOR"
+              : "Tests/Tasks"}
           </h1>
         </div>
-        {activeTab === 'WEL' ? (
+        {activeTab === "WEL" ? (
           <StudentWelRecordsTable studentId={studentId} />
-        ): activeTab === 'results' ? (
+        ) : activeTab === "results" ? (
           <StudentResultsTable studentId={studentId} />
         ) : (
           <DataTable
-            data={applyFilters(tables[activeTab])}
             columns={columnsByTab[activeTab]}
-            searchPlaceholder={`Search ${activeTab}...`}
+            data={applyFilters(tables[activeTab])}
+            isLoading={isLoadingGeneral || isLoadingLegal}
           />
         )}
       </Card>

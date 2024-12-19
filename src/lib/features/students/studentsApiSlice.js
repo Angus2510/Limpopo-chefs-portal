@@ -1,5 +1,5 @@
-import { createSelector, createEntityAdapter } from '@reduxjs/toolkit';
-import { apiSlice } from '@/app/api/apiSlice';
+import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
+import { apiSlice } from "@/app/api/apiSlice";
 
 const studentsAdapter = createEntityAdapter({});
 
@@ -8,7 +8,7 @@ const initialState = studentsAdapter.getInitialState();
 export const studentsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getStudents: builder.query({
-      query: () => '/students',
+      query: () => "/students",
       validateStatus: (response, result) => {
         return response.status === 200 && !result.isError;
       },
@@ -22,10 +22,10 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, arg) => {
         if (result?.ids) {
           return [
-            { type: 'Student', id: 'LIST' },
-            ...result.ids.map((id) => ({ type: 'Student', id })),
+            { type: "Student", id: "LIST" },
+            ...result.ids.map((id) => ({ type: "Student", id })),
           ];
-        } else return [{ type: 'Student', id: 'LIST' }];
+        } else return [{ type: "Student", id: "LIST" }];
       },
     }),
 
@@ -43,50 +43,49 @@ export const studentsApiSlice = apiSlice.injectEndpoints({
           id: student._id,
         });
       },
-      providesTags: (result, error, id) => [{ type: 'Student', id }],
+      providesTags: (result, error, id) => [{ type: "Student", id }],
     }),
 
     addNewStudent: builder.mutation({
       query: (formData) => ({
-        url: '/students',
-        method: 'POST',
-        body: formData, 
+        url: "/students",
+        method: "POST",
+        body: formData,
       }),
-      invalidatesTags: [{ type: 'Student', id: 'LIST' }],
+      invalidatesTags: [{ type: "Student", id: "LIST" }],
     }),
 
     updateStudent: builder.mutation({
       query: ({ id, formData }) => ({
         url: `/students/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
         body: formData,
         headers: {},
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: 'Student', id: arg.id },
+        { type: "Student", id: arg.id },
       ],
     }),
 
     toggleStudentStatus: builder.mutation({
       query: ({ id, reason }) => ({
         url: `/students/toggle-status/${id}`,
-        method: 'POST',
+        method: "POST",
         body: { reason },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: 'Student', id: arg.id },
+        { type: "Student", id: arg.id },
       ],
     }),
 
-    
     deleteStudent: builder.mutation({
       query: ({ id }) => ({
         url: `/students`,
-        method: 'DELETE',
+        method: "DELETE",
         body: { id },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: 'Student', id: arg.id },
+        { type: "Student", id: arg.id },
       ],
     }),
   }),

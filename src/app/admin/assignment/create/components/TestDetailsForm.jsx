@@ -29,6 +29,7 @@ function TestCreationPage({ id }) {
     useAddAssignmentMutation();
   const [addQuestionToAssignment, { isLoading: isQuestionLoading }] =
     useAddQuestionToAssignmentMutation();
+  const [uploadFile] = useUploadFileMutation(); // Add missing uploadFile mutation
 
   // Function to handle file uploads for Match type questions
   const handleFileUpload = async (file, assignmentId, questionId) => {

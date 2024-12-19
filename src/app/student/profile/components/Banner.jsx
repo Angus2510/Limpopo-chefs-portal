@@ -33,6 +33,8 @@ const Banner = ({
               src={avatar}
               alt=""
               onError={() => setImageError(true)}
+              width={300}
+              height={300}
             />
           ) : (
             <span className="text-xl font-medium text-white">{initials}</span>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useMemo, useState, useEffect } from "react";
 import {
   useGlobalFilter,
@@ -8,7 +8,7 @@ import {
 } from "react-table";
 import Select from "react-select";
 import Card from "@/components/card";
-import { exportToCSV, exportToExcel, exportToPDF } from '@/utils/exportUtils';
+import { exportToCSV, exportToExcel, exportToPDF } from "@/utils/exportUtils";
 import Dropdown from "@/components/dropdown";
 import { FiDownload } from "react-icons/fi";
 
@@ -27,14 +27,23 @@ type Props = {
   columns: any[];
   data: RowData[];
   filters: Filter[];
-  onRowClick?: (row: any) => void; 
-  onGenerateReport?: (selectedIds: string[]) => void; 
-  isGenerating?: boolean; 
+  onRowClick?: (row: any) => void;
+  onGenerateReport?: (selectedIds: string[]) => void;
+  isGenerating?: boolean;
 };
 
-const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGenerateReport, isGenerating }) => {
+const DataTable: React.FC<Props> = ({
+  columns,
+  data,
+  filters,
+  onRowClick,
+  onGenerateReport,
+  isGenerating,
+}) => {
   const [isTableReady, setTableReady] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: string[] }>({});
+  const [selectedOptions, setSelectedOptions] = useState<{
+    [key: string]: string[];
+  }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
@@ -43,7 +52,7 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
   }, []);
 
   const handleChange = (id: string, selectedOptions: any) => {
-    setSelectedOptions(prevSelectedOptions => ({
+    setSelectedOptions((prevSelectedOptions) => ({
       ...prevSelectedOptions,
       [id]: selectedOptions.map((option: { value: string }) => option.value),
     }));
@@ -57,12 +66,12 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
     if (selectedRows.size === filteredData.length) {
       setSelectedRows(new Set());
     } else {
-      setSelectedRows(new Set(filteredData.map(row => row.id)));
+      setSelectedRows(new Set(filteredData.map((row) => row.id)));
     }
   };
 
   const handleRowCheckboxChange = (id: string) => {
-    setSelectedRows(prevSelectedRows => {
+    setSelectedRows((prevSelectedRows) => {
       const newSelectedRows = new Set(prevSelectedRows);
       if (newSelectedRows.has(id)) {
         newSelectedRows.delete(id);
@@ -74,8 +83,22 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
   };
 
   const exportOptions = [
-    { name: "Excel", action: () => exportToExcel(columns.filter(col => col.accessor !== 'actions'), filteredData) },
-    { name: "PDF", action: () => exportToPDF(columns.filter(col => col.accessor !== 'actions'), filteredData) }
+    {
+      name: "Excel",
+      action: () =>
+        exportToExcel(
+          columns.filter((col) => col.accessor !== "actions"),
+          filteredData
+        ),
+    },
+    {
+      name: "PDF",
+      action: () =>
+        exportToPDF(
+          columns.filter((col) => col.accessor !== "actions"),
+          filteredData
+        ),
+    },
   ];
 
   const filteredData = useMemo(() => {
@@ -84,14 +107,16 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
     for (const filter of filters) {
       const values = selectedOptions[filter.id] || [];
       if (values.length > 0 && !values.includes(filter.defaultOption)) {
-        filtered = filtered.filter(row => values.includes(row[filter.id]));
+        filtered = filtered.filter((row) => values.includes(row[filter.id]));
       }
     }
 
     if (searchQuery) {
-      filtered = filtered.filter(row => {
-        return Object.values(row).some(value =>
-          typeof value === 'string' && value.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter((row) => {
+        return Object.values(row).some(
+          (value) =>
+            typeof value === "string" &&
+            value.toLowerCase().includes(searchQuery.toLowerCase())
         );
       });
     }
@@ -133,14 +158,18 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
     <Card className={"w-full pb-10 p-4 h-full"}>
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
         <div className="flex flex-col md:flex-row md:flex-wrap items-start gap-2 flex-grow ml-4">
-          {filters.map(filter => (
+          {filters.map((filter) => (
             <div key={filter.id} className="mb-4 flex-grow">
               <Select
                 isMulti
-                onChange={selectedOptions => handleChange(filter.id, selectedOptions)}
+                onChange={(selectedOptions) =>
+                  handleChange(filter.id, selectedOptions)
+                }
                 options={filter.options}
                 placeholder={filter.defaultOption}
-                value={filter.options.filter(option => selectedOptions[filter.id]?.includes(option.value))}
+                value={filter.options.filter((option) =>
+                  selectedOptions[filter.id]?.includes(option.value)
+                )}
                 className="w-full"
               />
             </div>
@@ -152,15 +181,17 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
               onChange={handleSearchChange}
               placeholder="Search..."
               className="w-full mb-4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              style={{ width: '300px', height: '38px' }} 
+              style={{ width: "300px", height: "38px" }}
             />
           </div>
         </div>
-        
+
         <div className="flex gap-2 items-start md:items-start">
-        <button
+          <button
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => onGenerateReport && onGenerateReport(Array.from(selectedRows))}
+            onClick={() =>
+              onGenerateReport && onGenerateReport(Array.from(selectedRows))
+            }
             disabled={isGenerating}
           >
             {isGenerating ? (
@@ -189,19 +220,20 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
             )}
           </button>
 
-
-
-
-
-
           <Dropdown
             button={<FiDownload className="text-xl cursor-pointer" />}
             className={"py-2 top-8 -left-[180px] w-max"}
           >
             <div className="flex w-56 flex-col justify-start rounded-[20px] bg-white bg-cover bg-no-repeat shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none">
               <div className="flex flex-col p-4">
-                {exportOptions.map(option => (
-                  <button key={option.name} className={`p-2 hover:bg-gray-100 ${option.name === 'PDF' ? 'text-green-500' : 'text-gray-700'}`} onClick={option.action}>
+                {exportOptions.map((option) => (
+                  <button
+                    key={option.name}
+                    className={`p-2 hover:bg-gray-100 ${
+                      option.name === "PDF" ? "text-green-500" : "text-gray-700"
+                    }`}
+                    onClick={option.action}
+                  >
                     Export to {option.name}
                   </button>
                 ))}
@@ -259,7 +291,7 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
                       className="pt-[14px] pb-[20px]"
                       key={`cell-${cellIndex}`}
                     >
-                      {cell.render('Cell')}
+                      {cell.render("Cell")}
                     </td>
                   ))}
                 </tr>
@@ -269,26 +301,42 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
         </table>
         {/* Pagination */}
         <div>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md">
-            {'<<'}
-          </button>{' '}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage} className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md">
-            {'<'}
-          </button>{' '}
-          <button onClick={() => nextPage()} disabled={!canNextPage} className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md">
-            {'>'}
-          </button>{' '}
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md">
-            {'>>'}
-          </button>{' '}
+          <button
+            onClick={() => gotoPage(0)}
+            disabled={!canPreviousPage}
+            className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md"
+          >
+            {"<<"}
+          </button>{" "}
+          <button
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+            className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md"
+          >
+            {"<"}
+          </button>{" "}
+          <button
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
+            className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md"
+          >
+            {">"}
+          </button>{" "}
+          <button
+            onClick={() => gotoPage(pageCount - 1)}
+            disabled={!canNextPage}
+            className="mr-2 px-4 py-2 text-sm bg-gray-100 rounded-md"
+          >
+            {">>"}
+          </button>{" "}
           <span>
-            Page{' '}
+            Page{" "}
             <strong>
               {pageIndex + 1} of {pageOptions.length}
-            </strong>{' '}
+            </strong>{" "}
           </span>
           <span>
-            | Go to page:{' '}
+            | Go to page:{" "}
             <input
               type="number"
               defaultValue={pageIndex + 1}
@@ -296,16 +344,16 @@ const DataTable: React.FC<Props> = ({ columns, data, filters, onRowClick, onGene
                 const page = e.target.value ? Number(e.target.value) - 1 : 0;
                 gotoPage(page);
               }}
-              style={{ width: '100px' }}
+              style={{ width: "100px" }}
             />
-          </span>{' '}
+          </span>{" "}
           <select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
             }}
           >
-            {[10, 20, 30, 40, 50].map(pageSize => (
+            {[10, 20, 30, 40, 50].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
                 Show {pageSize}
               </option>
