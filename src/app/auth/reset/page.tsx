@@ -4,21 +4,21 @@ import Image from "next/image";
 import { useRequestPasswordResetMutation } from "@/lib/features/auth/resetPasswordApiSlice";
 
 export default function ResetPage() {
-  const [identifier, setIdentifier] = useState<string>("");
+  const [email, setEmail] = useState<string>(""); // Changed to "email"
   const [requestPasswordReset] = useRequestPasswordResetMutation();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setIdentifier(e.target.value);
+    setEmail(e.target.value); // Updated
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await requestPasswordReset({ identifier }).unwrap();
-      alert('Password reset link sent!');
+      await requestPasswordReset({ email }).unwrap(); // Passes "email" instead of "identifier"
+      alert("Password reset link sent!");
     } catch (err) {
-      console.error('Failed to send reset link:', err);
-      alert('Error sending reset link.');
+      console.error("Failed to send reset link:", err);
+      alert("Error sending reset link.");
     }
   };
 
@@ -37,20 +37,23 @@ export default function ResetPage() {
             Student Portal
           </h4>
           <p className="mb-9 ml-1 text-base text-gray-600">
-            Enter your email or username to reset your password.
+            Enter your email to reset your password.
           </p>
         </div>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="identifier" className="block text-sm font-medium leading-6 text-gray-900">
-              Email or Username
+            <label
+              htmlFor="email" // Changed to "email"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Email
             </label>
             <div className="mt-2">
               <input
-                id="identifier"
-                name="identifier"
+                id="email" // Changed to "email"
+                name="email"
                 type="text"
-                value={identifier}
+                value={email} // Updated
                 onChange={handleChange}
                 autoComplete="off"
                 required

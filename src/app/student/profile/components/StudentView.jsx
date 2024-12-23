@@ -98,11 +98,11 @@ export default function Student({ studentId }) {
             />
             <EditBlock text={student.importantInformation} />
           </div>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-col gap-5">
             {/* SOR Download Button */}
             <button
               onClick={handleDownloadSor}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded "
+              className=" flex justify-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded "
             >
               Download My SOR
             </button>

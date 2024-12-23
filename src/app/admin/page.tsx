@@ -1,11 +1,3 @@
-  
 export default async function Admin() {
-  
-    return (
-            <div>
-                admin
-            </div>
-
-    )
-  }
-  
+  return <div>admin</div>;
+}
