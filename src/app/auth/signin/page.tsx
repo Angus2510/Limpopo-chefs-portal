@@ -2,33 +2,36 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { useAuth } from '@/contexts/AuthContext';
-import { FiLoader } from 'react-icons/fi';
+import { useRouter } from "next/navigation";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useAuth } from "@/contexts/AuthContext";
+import { FiLoader } from "react-icons/fi";
 
 type LoginInput = {
   identifier: string;
   password: string;
-}
+};
 
 type PageProps = {
-  searchParams: { error?: string }
-}
+  searchParams: { error?: string };
+};
 
 export default function LoginPage({ searchParams }: PageProps) {
-  const [inputs, setInputs] = useState<LoginInput>({ identifier: "", password: "" });
+  const [inputs, setInputs] = useState<LoginInput>({
+    identifier: "",
+    password: "",
+  });
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login, loading } = useAuth(); 
+  const { login, loading } = useAuth();
   const router = useRouter();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const name = event.target.name;
     const value = event.target.value;
-    setInputs(values => ({ ...values, [name]: value }));
-  }
+    setInputs((values) => ({ ...values, [name]: value }));
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -36,14 +39,14 @@ export default function LoginPage({ searchParams }: PageProps) {
     try {
       await login(inputs.identifier, inputs.password);
     } catch (error) {
-      setError('Login failed. Please check your credentials.');
-    }finally {
+      setError("Login failed. Please check your credentials.");
+    } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -67,7 +70,10 @@ export default function LoginPage({ searchParams }: PageProps) {
           </div>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="identifier" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="identifier"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Username
               </label>
               <div className="mt-2">
@@ -86,7 +92,10 @@ export default function LoginPage({ searchParams }: PageProps) {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Password
                 </label>
               </div>
@@ -106,14 +115,16 @@ export default function LoginPage({ searchParams }: PageProps) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                 >
-                  {showPassword ? <FiEyeOff size={16} style={{ color: 'lightgray' }} /> : <FiEye size={16} style={{ color: 'lightgray' }} />}
+                  {showPassword ? (
+                    <FiEyeOff size={16} style={{ color: "lightgray" }} />
+                  ) : (
+                    <FiEye size={16} style={{ color: "lightgray" }} />
+                  )}
                 </button>
               </div>
             </div>
             {error && (
-              <p className="text-red-600 text-center capitalize">
-                {error}
-              </p>
+              <p className="text-red-600 text-center capitalize">{error}</p>
             )}
             <Link href="/auth/reset">
               <p className="mb-9 ml-1 text-base text-gray-600 text-sm">
@@ -126,7 +137,11 @@ export default function LoginPage({ searchParams }: PageProps) {
                 disabled={isSubmitting}
                 className="flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
               >
-                 {isSubmitting ? <FiLoader className="animate-spin" /> : 'Sign in'}
+                {isSubmitting ? (
+                  <FiLoader className="animate-spin" />
+                ) : (
+                  "Sign in"
+                )}
               </button>
             </div>
             <div>

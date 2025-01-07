@@ -1,12 +1,12 @@
 // src/app/admin/test/page.tsx
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 import Timesheet from "./components/Timesheet";
-import { fetchServerSession } from '@/utils/auth';
-import { User } from '@/types/types';
+import { fetchServerSession } from "@/utils/auth";
+import { User } from "@/types/types";
 
 export default async function Dashboard() {
-  const cookieStore = require('next/headers').cookies;
-  const accessToken = cookieStore().get('accessToken')?.value;
+  const cookieStore = require("next/headers").cookies;
+  const accessToken = cookieStore().get("accessToken")?.value;
 
   let user: User | null = null;
 
@@ -15,10 +15,10 @@ export default async function Dashboard() {
   }
 
   if (!user) {
-    redirect('/api/auth/signin?callbackUrl=/admin/test');
+    redirect("/api/auth/signin?callbackUrl=/student/dashboard");
   }
 
-  console.log('User ID:', user.id);
+  console.log("User ID:", user.id);
 
   return (
     <div>

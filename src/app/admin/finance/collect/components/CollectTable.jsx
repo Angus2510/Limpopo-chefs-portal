@@ -1,22 +1,27 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react';
-import DataTable from '@/components/tables/BasicTable';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import DataTable from "@/components/tables/BasicTable";
+import { useRouter } from "next/navigation";
 
-import { useSelector } from 'react-redux';
-import { selectAllStudents } from '@/lib/features/students/studentsApiSlice';
-import { useGetStudentsQuery } from '@/lib/features/students/studentsApiSlice';
+import { useSelector } from "react-redux";
+import { selectAllStudents } from "@/lib/features/students/studentsApiSlice";
+import { useGetStudentsQuery } from "@/lib/features/students/studentsApiSlice";
 
-import { useGetIntakeGroupsQuery, selectAllIntakeGroups } from '@/lib/features/intakegroup/intakeGroupApiSlice';
-import { useGetCampusesQuery, selectAllCampuses } from '@/lib/features/campus/campusApiSlice';
-
+import {
+  useGetIntakeGroupsQuery,
+  selectAllIntakeGroups,
+} from "@/lib/features/intakegroup";
+import {
+  useGetCampusesQuery,
+  selectAllCampuses,
+} from "@/lib/features/campus/campusApiSlice";
 
 const CollectTable = () => {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [intakeGroupFilter, setIntakeGroupFilter] = useState('');
-  const [campusFilter, setCampusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [intakeGroupFilter, setIntakeGroupFilter] = useState("");
+  const [campusFilter, setCampusFilter] = useState("");
 
   const {
     data: studentsNormalized,
@@ -28,57 +33,73 @@ const CollectTable = () => {
 
   const students = useSelector(selectAllStudents);
 
-  const { data: intakeGroupsNormalized, isLoading: intakeGroupsLoading, isError: intakeGroupsError, error: intakeGroupsFetchError, refetch: refetchIntakeGroups } = useGetIntakeGroupsQuery();
-  const { data: campusesNormalized, isLoading: campusesLoading, isError: campusesError, error: campusesFetchError, refetch: refetchCampuses } = useGetCampusesQuery();
+  const {
+    data: intakeGroupsNormalized,
+    isLoading: intakeGroupsLoading,
+    isError: intakeGroupsError,
+    error: intakeGroupsFetchError,
+    refetch: refetchIntakeGroups,
+  } = useGetIntakeGroupsQuery();
+  const {
+    data: campusesNormalized,
+    isLoading: campusesLoading,
+    isError: campusesError,
+    error: campusesFetchError,
+    refetch: refetchCampuses,
+  } = useGetCampusesQuery();
 
   const intakeGroups = useSelector(selectAllIntakeGroups);
   const campuses = useSelector(selectAllCampuses);
 
-  
-  const intakeGroupOptions = intakeGroups.map(group => ({ label: group.title, value: group.title }));
-  const campusOptions = campuses.map(campus => ({ label: campus.title, value: campus.title }));
+  const intakeGroupOptions = intakeGroups.map((group) => ({
+    label: group.title,
+    value: group.title,
+  }));
+  const campusOptions = campuses.map((campus) => ({
+    label: campus.title,
+    value: campus.title,
+  }));
 
-  const filters = [ 
+  const filters = [
     {
-      id: 'intakeGroup',
+      id: "intakeGroup",
       options: intakeGroupOptions,
-      defaultOption: 'All Intakes'
+      defaultOption: "All Intakes",
     },
     {
-      id: 'campus',
+      id: "campus",
       options: campusOptions,
-      defaultOption: 'All Campuses'
+      defaultOption: "All Campuses",
     },
   ];
 
-  const transformedStudents = students.map(student => ({
+  const transformedStudents = students.map((student) => ({
     ...student,
-    campus: student.campus.map(group => group.title).join(', '),
-    intakeGroup: student.intakeGroup.map(group => group.title).join(', ')
+    campus: student.campus.map((group) => group.title).join(", "),
+    intakeGroup: student.intakeGroup.map((group) => group.title).join(", "),
   }));
 
   const columns = [
-    { Header: 'Intake Group', accessor: 'intakeGroup' },
-    { Header: 'Campus', accessor: 'campus' },
-    { Header: 'Student Number', accessor: 'admissionNumber' },
-    { Header: 'Student Name', accessor: 'profile.firstName'},
+    { Header: "Intake Group", accessor: "intakeGroup" },
+    { Header: "Campus", accessor: "campus" },
+    { Header: "Student Number", accessor: "admissionNumber" },
+    { Header: "Student Name", accessor: "profile.firstName" },
     {
-      Header: 'Action',
-      accessor: 'action',
-      Cell: ({ row }) => ( 
+      Header: "Action",
+      accessor: "action",
+      Cell: ({ row }) => (
         <button
           className="inline-flex justify-center rounded-md border border-transparent bg-brand-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
           onClick={(event) => {
-            event.stopPropagation(); 
+            event.stopPropagation();
             router.push(`/admin/finance/collect/${row.original._id}`);
           }}
         >
           Collect Fees
         </button>
-      )
-    }
+      ),
+    },
   ];
-
 
   return (
     <DataTable

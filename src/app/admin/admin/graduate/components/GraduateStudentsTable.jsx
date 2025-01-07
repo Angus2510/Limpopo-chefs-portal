@@ -12,7 +12,7 @@ import {
 import {
   useGetIntakeGroupsQuery,
   selectAllIntakeGroups,
-} from "@/lib/features/intakegroup/intakeGroupApiSlice"; // Import functions from intake groups API slice
+} from "@/lib/features/intakegroup"; // Import functions from intake groups API slice
 import {
   useGetCampusesQuery,
   selectAllCampuses,

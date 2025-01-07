@@ -15,7 +15,7 @@ import DownloadButton from "./DownloadButton"; // Button component for downloadi
 import {
   useGetIntakeGroupsQuery,
   selectAllIntakeGroups,
-} from "@/lib/features/intakegroup/intakeGroupApiSlice";
+} from "@/lib/features/intakegroup";
 import {
   useGetCampusesQuery,
   selectAllCampuses,

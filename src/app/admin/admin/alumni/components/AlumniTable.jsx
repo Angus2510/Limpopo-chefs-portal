@@ -14,7 +14,7 @@ import {
 import {
   useGetIntakeGroupsQuery,
   selectAllIntakeGroups,
-} from "@/lib/features/intakegroup/intakeGroupApiSlice"; // Importing intake group data fetching actions
+} from "@/lib/features/intakegroup"; // Importing intake group data fetching actions
 import {
   useGetCampusesQuery,
   selectAllCampuses,

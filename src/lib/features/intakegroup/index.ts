@@ -1,5 +1,5 @@
-import { createSelector, createEntityAdapter } from '@reduxjs/toolkit';
-import { apiSlice } from '@/app/api/apiSlice';
+import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
+import { apiSlice } from "@/app/api/apiSlice";
 
 const intakeGroupsAdapter = createEntityAdapter({});
 
@@ -7,67 +7,68 @@ const initialState = intakeGroupsAdapter.getInitialState();
 
 export const intakeGroupsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Get all intake groups
     getIntakeGroups: builder.query({
-      query: () => '/intakegroups',
-      validateStatus: (response, result) =>
-        response.status === 200 && !result.isError,
+      query: () => "/api/intakegroups", // Adjust to your Next.js API route
       transformResponse: (responseData) => {
         const loadedIntakeGroups = responseData.map((intakeGroup) => {
-          intakeGroup.id = intakeGroup._id; 
+          intakeGroup.id = intakeGroup._id; // Adjust Prisma field (_id) if necessary
           return intakeGroup;
         });
         return intakeGroupsAdapter.setAll(initialState, loadedIntakeGroups);
       },
       providesTags: (result, error, arg) => [
-        { type: 'IntakeGroup', id: 'LIST' },
-        ...result.ids.map((id) => ({ type: 'IntakeGroup', id })),
+        { type: "IntakeGroup", id: "LIST" },
+        ...result.ids.map((id) => ({ type: "IntakeGroup", id })),
       ],
     }),
 
+    // Get a single intake group by ID
     getIntakeGroupById: builder.query({
-      query: (id) => `/intakegroups/${id}`,
-      validateStatus: (response, result) =>
-        response.status === 200 && !result.isError,
-      transformResponse: (responseData, meta, arg) => {
+      query: (id) => `/api/intakegroups/${id}`, // Adjust to your Next.js API route
+      transformResponse: (responseData) => {
         const intakeGroup = Array.isArray(responseData)
           ? responseData[0]
           : responseData;
         return intakeGroupsAdapter.upsertOne(initialState, {
           ...intakeGroup,
-          id: intakeGroup._id,
+          id: intakeGroup._id, // Adjust if necessary
         });
       },
-      providesTags: (result, error, id) => [{ type: 'IntakeGroup', id }],
+      providesTags: (result, error, id) => [{ type: "IntakeGroup", id }],
     }),
 
+    // Add a new intake group
     addNewIntakeGroup: builder.mutation({
       query: (formData) => ({
-        url: '/intakegroups',
-        method: 'POST',
+        url: "/api/intakegroups", // Adjust to your Next.js API route
+        method: "POST",
         body: formData,
       }),
-      invalidatesTags: [{ type: 'IntakeGroup', id: 'LIST' }],
+      invalidatesTags: [{ type: "IntakeGroup", id: "LIST" }],
     }),
-    
+
+    // Update an existing intake group
     updateIntakeGroup: builder.mutation({
       query: ({ id, formData }) => ({
-        url: `/intakegroups/${id}`,
-        method: 'PATCH',
+        url: `/api/intakegroups/${id}`, // Adjust to your Next.js API route
+        method: "PATCH",
         body: formData,
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: 'IntakeGroup', id: arg.id },
+        { type: "IntakeGroup", id: arg.id },
       ],
     }),
 
+    // Delete an intake group
     deleteIntakeGroup: builder.mutation({
       query: ({ id }) => ({
-        url: '/intakegroups',
-        method: 'DELETE',
+        url: "/api/intakegroups", // Adjust to your Next.js API route for deletion
+        method: "DELETE",
         body: { id },
       }),
       invalidatesTags: (result, error, arg) => [
-        { type: 'IntakeGroup', id: arg.id },
+        { type: "IntakeGroup", id: arg.id },
       ],
     }),
   }),
@@ -81,17 +82,17 @@ export const {
   useDeleteIntakeGroupMutation,
 } = intakeGroupsApiSlice;
 
-// returns the query result object
+// Returns the query result object
 export const selectIntakeGroupsResult =
   intakeGroupsApiSlice.endpoints.getIntakeGroups.select();
 
-// creates memoized selector
+// Creates memoized selector
 const selectIntakeGroupsData = createSelector(
   selectIntakeGroupsResult,
-  (intakeGroupsResult) => intakeGroupsResult.data // normalized state object with ids & entities
+  (intakeGroupsResult) => intakeGroupsResult.data // Normalized state object with ids & entities
 );
 
-// Get selectors creates these selectors and we rename them with aliases using destructuring
+// Entity adapter selectors
 export const {
   selectAll: selectAllIntakeGroups,
   selectById: selectIntakeGroupById,

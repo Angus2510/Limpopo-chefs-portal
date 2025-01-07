@@ -1,17 +1,24 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import DataTable from '@/components/tables/BasicTableWithoutFilter'; 
-import { useRouter } from 'next/navigation';
-import { FiEdit } from 'react-icons/fi';
-import Card from '@/components/card/index';
-import { useSelector } from 'react-redux';
-import { useGetIntakeGroupsQuery, selectAllIntakeGroups } from '@/lib/features/intakegroup/intakeGroupApiSlice';
+import React, { useEffect } from "react";
+import DataTable from "@/components/tables/BasicTableWithoutFilter";
+import { useRouter } from "next/navigation";
+import { FiEdit } from "react-icons/fi";
+import Card from "@/components/card/index";
+import { useSelector } from "react-redux";
+import {
+  useGetIntakeGroupsQuery,
+  selectAllIntakeGroups,
+} from "@/lib/features/intakegroup";
 
 const MarkAssignmentTable = () => {
   const router = useRouter();
 
-  const { data: intakeGroupsNormalized, isLoading: intakeGroupsLoading, isError: intakeGroupsError } = useGetIntakeGroupsQuery();
+  const {
+    data: intakeGroupsNormalized,
+    isLoading: intakeGroupsLoading,
+    isError: intakeGroupsError,
+  } = useGetIntakeGroupsQuery();
 
   const intakeGroups = useSelector(selectAllIntakeGroups) ?? [];
 
@@ -20,14 +27,14 @@ const MarkAssignmentTable = () => {
   };
 
   useEffect(() => {
-    console.log('Intake Groups:', intakeGroups);
+    console.log("Intake Groups:", intakeGroups);
   }, [intakeGroups]);
 
   const columns = [
-    { Header: 'Intake Group', accessor: 'title' },
+    { Header: "Intake Group", accessor: "title" },
     {
-      Header: 'Actions',
-      accessor: 'actions',
+      Header: "Actions",
+      accessor: "actions",
       Cell: ({ row }) => (
         <div className="flex space-x-2">
           <button
@@ -40,8 +47,8 @@ const MarkAssignmentTable = () => {
             <FiEdit />
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   // Display loading or error states

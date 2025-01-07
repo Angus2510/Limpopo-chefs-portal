@@ -1,39 +1,69 @@
-'use client';
-import React from 'react';
-import DataTable from '@/components/tables/BasicTable';
-import { useRouter } from 'next/navigation';
-import { FiDollarSign } from 'react-icons/fi';
-import Card from '@/components/card/index';
-import { useSelector } from 'react-redux';
-import { useGetAccountsInArrearsQuery } from '@/lib/features/reports/reportsApiSlice';
-import { useGetIntakeGroupsQuery, selectAllIntakeGroups } from '@/lib/features/intakegroup/intakeGroupApiSlice';
-import { useGetCampusesQuery, selectAllCampuses } from '@/lib/features/campus/campusApiSlice';
+"use client";
+import React from "react";
+import DataTable from "@/components/tables/BasicTable";
+import { useRouter } from "next/navigation";
+import { FiDollarSign } from "react-icons/fi";
+import Card from "@/components/card/index";
+import { useSelector } from "react-redux";
+import { useGetAccountsInArrearsQuery } from "@/lib/features/reports/reportsApiSlice";
+import {
+  useGetIntakeGroupsQuery,
+  selectAllIntakeGroups,
+} from "@/lib/features/intakegroup";
+import {
+  useGetCampusesQuery,
+  selectAllCampuses,
+} from "@/lib/features/campus/campusApiSlice";
 
 const ArrearsTable = () => {
   const router = useRouter();
 
-  const { data: arrearsData, isLoading, isError, error, refetch } = useGetAccountsInArrearsQuery();
-  const { data: intakeGroupsNormalized, isLoading: intakeGroupsLoading, isError: intakeGroupsError, error: intakeGroupsFetchError, refetch: refetchIntakeGroups } = useGetIntakeGroupsQuery();
-  const { data: campusesNormalized, isLoading: campusesLoading, isError: campusesError, error: campusesFetchError, refetch: refetchCampuses } = useGetCampusesQuery();
+  const {
+    data: arrearsData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetAccountsInArrearsQuery();
+  const {
+    data: intakeGroupsNormalized,
+    isLoading: intakeGroupsLoading,
+    isError: intakeGroupsError,
+    error: intakeGroupsFetchError,
+    refetch: refetchIntakeGroups,
+  } = useGetIntakeGroupsQuery();
+  const {
+    data: campusesNormalized,
+    isLoading: campusesLoading,
+    isError: campusesError,
+    error: campusesFetchError,
+    refetch: refetchCampuses,
+  } = useGetCampusesQuery();
 
   const intakeGroups = useSelector(selectAllIntakeGroups);
   const campuses = useSelector(selectAllCampuses);
 
-  console.log('arrearsData:', arrearsData); // Log the arrearsData to inspect its structure
+  console.log("arrearsData:", arrearsData); // Log the arrearsData to inspect its structure
 
-  const intakeGroupOptions = intakeGroups.map(group => ({ label: group.title, value: group.title }));
-  const campusOptions = campuses.map(campus => ({ label: campus.title, value: campus.title }));
+  const intakeGroupOptions = intakeGroups.map((group) => ({
+    label: group.title,
+    value: group.title,
+  }));
+  const campusOptions = campuses.map((campus) => ({
+    label: campus.title,
+    value: campus.title,
+  }));
 
   const filters = [
     {
-      id: 'intakeGroup',
+      id: "intakeGroup",
       options: intakeGroupOptions,
-      defaultOption: 'All Intakes'
+      defaultOption: "All Intakes",
     },
     {
-      id: 'campus',
+      id: "campus",
       options: campusOptions,
-      defaultOption: 'All Campuses'
+      defaultOption: "All Campuses",
     },
   ];
 
@@ -41,21 +71,28 @@ const ArrearsTable = () => {
     router.push(`/admin/students/${student.admissionNumber}`);
   };
 
-  const transformedArrearsData = arrearsData ? Object.values(arrearsData.entities).map(report => ({
-    ...report,
-    dueDate: report.dueDate ? new Date(report.dueDate).toLocaleDateString() : '',
-  })) : [];
+  const transformedArrearsData = arrearsData
+    ? Object.values(arrearsData.entities).map((report) => ({
+        ...report,
+        dueDate: report.dueDate
+          ? new Date(report.dueDate).toLocaleDateString()
+          : "",
+      }))
+    : [];
 
   const columns = [
-    { Header: 'Student No', accessor: 'admissionNumber' },
-    { Header: 'First Name', accessor: 'firstName' },
-    { Header: 'Last Name', accessor: 'lastName' },
-    { Header: 'ID No', accessor: 'idNumber' },
-    { Header: 'Arrears Amount', accessor: 'totalAmount' },
-    { Header: 'Due Date', accessor: 'dueDate' },
-    { Header: 'Campus', accessor: 'campus' },
-    { Header: 'Intake Group', accessor: 'intakeGroup' },
-    { Header: 'Actions', accessor: 'actions', Cell: ({ row }) => (
+    { Header: "Student No", accessor: "admissionNumber" },
+    { Header: "First Name", accessor: "firstName" },
+    { Header: "Last Name", accessor: "lastName" },
+    { Header: "ID No", accessor: "idNumber" },
+    { Header: "Arrears Amount", accessor: "totalAmount" },
+    { Header: "Due Date", accessor: "dueDate" },
+    { Header: "Campus", accessor: "campus" },
+    { Header: "Intake Group", accessor: "intakeGroup" },
+    {
+      Header: "Actions",
+      accessor: "actions",
+      Cell: ({ row }) => (
         <div className="flex space-x-2">
           <button
             onClick={(event) => {
@@ -67,8 +104,8 @@ const ArrearsTable = () => {
             <FiDollarSign />
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (

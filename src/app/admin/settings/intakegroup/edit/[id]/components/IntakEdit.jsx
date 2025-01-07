@@ -1,26 +1,33 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Card from '@/components/card';
-import CampusSelect from '@/components/select/CampusSelect'; 
-import OutcomeSelect from '@/components/select/OutcomeSelect'; 
-import { useGetIntakeGroupByIdQuery, useUpdateIntakeGroupMutation } from '@/lib/features/intakegroup/intakeGroupApiSlice'; // Ensure the path is correct
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Card from "@/components/card";
+import CampusSelect from "@/components/select/CampusSelect";
+import OutcomeSelect from "@/components/select/OutcomeSelect";
+import {
+  useGetIntakeGroupByIdQuery,
+  useUpdateIntakeGroupMutation,
+} from "@/lib/features/intakegroup"; // Ensure the path is correct
 
 const EditIntakeGroup = ({ id }) => {
   const router = useRouter();
-  const { data: intakeGroupData, isLoading: isFetching, isError } = useGetIntakeGroupByIdQuery(id);
+  const {
+    data: intakeGroupData,
+    isLoading: isFetching,
+    isError,
+  } = useGetIntakeGroupByIdQuery(id);
   const [updateIntakeGroup, { isLoading }] = useUpdateIntakeGroupMutation();
-  const [intakeGroupName, setIntakeGroupName] = useState('');
+  const [intakeGroupName, setIntakeGroupName] = useState("");
   const [selectedCampuses, setSelectedCampuses] = useState([]);
   const [selectedOutcomes, setSelectedOutcomes] = useState([]);
 
   useEffect(() => {
     if (intakeGroupData) {
       const intakeGroup = intakeGroupData.entities[id];
-      console.log('Processed intakeGroup data:', intakeGroup); // Log the processed data
-      setIntakeGroupName(intakeGroup.title || '');
-      setSelectedCampuses((intakeGroup.campus || []).map(c => c._id));
-      setSelectedOutcomes((intakeGroup.outcome || []).map(o => o._id));
+      console.log("Processed intakeGroup data:", intakeGroup); // Log the processed data
+      setIntakeGroupName(intakeGroup.title || "");
+      setSelectedCampuses((intakeGroup.campus || []).map((c) => c._id));
+      setSelectedOutcomes((intakeGroup.outcome || []).map((o) => o._id));
     }
   }, [intakeGroupData, id]);
 
@@ -36,11 +43,11 @@ const EditIntakeGroup = ({ id }) => {
           outcome: selectedOutcomes,
         },
       }).unwrap();
-      alert('Intake group updated successfully!');
-      router.push('/admin/settings/intakegroup');
+      alert("Intake group updated successfully!");
+      router.push("/admin/settings/intakegroup");
     } catch (error) {
-      console.error('Failed to update intake group:', error);
-      alert('Failed to update intake group. Please try again.');
+      console.error("Failed to update intake group:", error);
+      alert("Failed to update intake group. Please try again.");
     }
   };
 
@@ -50,12 +57,19 @@ const EditIntakeGroup = ({ id }) => {
   return (
     <Card className="bg-white p-6 rounded-2xl shadow-xl">
       <h4 className="text-xl font-bold text-navy-700">Edit Intake Group</h4>
-      <p className="mt-2 text-base text-gray-600">Update the details below to edit the intake group.</p>
+      <p className="mt-2 text-base text-gray-600">
+        Update the details below to edit the intake group.
+      </p>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           {/* Intake Group name input */}
           <div>
-            <label htmlFor="intakeGroupName" className="block text-sm font-medium text-gray-700">Intake Group Name</label>
+            <label
+              htmlFor="intakeGroupName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Intake Group Name
+            </label>
             <input
               type="text"
               id="intakeGroupName"
@@ -66,9 +80,15 @@ const EditIntakeGroup = ({ id }) => {
             />
           </div>
           {/* Campus selection */}
-          <CampusSelect selectedCampuses={selectedCampuses} setSelectedCampuses={setSelectedCampuses} />
+          <CampusSelect
+            selectedCampuses={selectedCampuses}
+            setSelectedCampuses={setSelectedCampuses}
+          />
           {/* Outcome selection */}
-          <OutcomeSelect selectedOutcomes={selectedOutcomes} setSelectedOutcomes={setSelectedOutcomes} />
+          <OutcomeSelect
+            selectedOutcomes={selectedOutcomes}
+            setSelectedOutcomes={setSelectedOutcomes}
+          />
         </div>
         {/* Submit button */}
         <div className="mt-6 flex justify-end">
@@ -77,11 +97,11 @@ const EditIntakeGroup = ({ id }) => {
             className="inline-flex justify-center rounded-md border border-transparent bg-brand-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 mr-4"
             disabled={isLoading}
           >
-            {isLoading ? 'Updating...' : 'Update Intake Group'}
+            {isLoading ? "Updating..." : "Update Intake Group"}
           </button>
           <button
             type="button"
-            onClick={() => router.push('/admin/settings/intakegroup')}
+            onClick={() => router.push("/admin/settings/intakegroup")}
             className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           >
             Cancel
